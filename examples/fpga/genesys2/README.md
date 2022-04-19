@@ -13,16 +13,16 @@ Please see [examples](https://ibex-core.readthedocs.io/en/latest/02_user/example
 
 ### Hardware
 
-  - Digilent Zedboard
+  - Digilent Genesys2
 
 ## Build
 
 The easiest way to build and execute this example is to call the following make goals from the root directory.
 
-Use the following for the Zedboard
+Use the following for the Genesys2
 
 ```
-make build-zedboard program-zedboard
+make build-genesys2 program-genesys2
 ```
 
 ### Software
@@ -44,10 +44,10 @@ This should produce a `led.vmem` file which is used in the synthesis to update t
 ### Hardware
 
 Run following command at the top level to build the respective hardware.
-Zedboard is supported and can be selected via the `--parts` parameter.
+Genesys2 is supported and can be selected via the `--parts` parameter.
 
 ```
-fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_zedboard --part xc7z020clg484-1
+fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_genesys2 --part xc7k325tffg900-1
 ```
 
 This will create a directory `build` which contains the output files, including
@@ -60,7 +60,7 @@ Example use case includes loading `coremark.vmem` which can be used for performa
 Please see [CoreMark README](https://github.com/lowRISC/ibex/blob/master/examples/sw/benchmarks/README.md) for compiling CoreMark.
 
 ```
-fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_zedboard --part xc7z020clg484-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem
+fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_genesys2 --part xc7k325tffg900-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem
 ```
 
 #### Power Analysis Using Vivado
@@ -71,7 +71,7 @@ This switching activity is then used to generate a detailed power report.
 In order to use it with CoreMark run the command below
 
 ```
-fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_zedboard --part xc7z020clg484-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem --FPGAPowerAnalysis=1
+fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_genesys2 --part xc7k325tffg900-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem --FPGAPowerAnalysis=1
 ```
 
 ## Program
@@ -79,7 +79,7 @@ fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_zedbo
 After the board is connected to the computer it can be programmed with:
 
 ```
-fusesoc --cores-root=. run --target=synth --run lowrisc:ibex:top_zedboard
+fusesoc --cores-root=. run --target=synth --run lowrisc:ibex:top_genesys2
 ```
 
 LED1/LED3 and LED0/LED2 should alternately be on after the FPGA programming is finished.
