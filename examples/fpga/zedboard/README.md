@@ -13,22 +13,16 @@ Please see [examples](https://ibex-core.readthedocs.io/en/latest/02_user/example
 
 ### Hardware
 
-  - Either a Digilent Arty A7-35 oder A7-100 board
+  - Digilent Zedboard
 
 ## Build
 
 The easiest way to build and execute this example is to call the following make goals from the root directory.
 
-Use the following for the Arty A7-35
+Use the following for the Zedboard
 
 ```
-make build-arty-35 program-arty
-```
-
-and for the Arty A7-100
-
-```
-make build-arty-100 program-arty
+make build-zedboard program-zedboard
 ```
 
 ### Software
@@ -49,15 +43,11 @@ This should produce a `led.vmem` file which is used in the synthesis to update t
 
 ### Hardware
 
-Run either of the following commands at the top level to build the respective hardware.
-Both variants of the Arty A7 are supported and can be selected via the `--parts` parameter.
+Run following command at the top level to build the respective hardware.
+Zedboard is supported and can be selected via the `--parts` parameter.
 
 ```
-fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L
-```
-
-```
-fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_artya7 --part xc7a100tcsg324-1
+fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_zedboard --part xc7z020clg484-1
 ```
 
 This will create a directory `build` which contains the output files, including
@@ -70,7 +60,7 @@ Example use case includes loading `coremark.vmem` which can be used for performa
 Please see [CoreMark README](https://github.com/lowRISC/ibex/blob/master/examples/sw/benchmarks/README.md) for compiling CoreMark.
 
 ```
-fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_artya7 --part xc7a100tcsg324-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem
+fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_zedboard --part xc7z020clg484-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem
 ```
 
 #### Power Analysis Using Vivado
@@ -81,7 +71,7 @@ This switching activity is then used to generate a detailed power report.
 In order to use it with CoreMark run the command below
 
 ```
-fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_artya7 --part xc7a100tcsg324-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem --FPGAPowerAnalysis=1
+fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_zedboard --part xc7z020clg484-1 --SRAMInitFile=examples/sw/benchmarks/coremark/coremark.vmem --FPGAPowerAnalysis=1
 ```
 
 ## Program
@@ -89,7 +79,7 @@ fusesoc --cores-root=. run --target=synth --setup --build lowrisc:ibex:top_artya
 After the board is connected to the computer it can be programmed with:
 
 ```
-fusesoc --cores-root=. run --target=synth --run lowrisc:ibex:top_artya7
+fusesoc --cores-root=. run --target=synth --run lowrisc:ibex:top_zedboard
 ```
 
 LED1/LED3 and LED0/LED2 should alternately be on after the FPGA programming is finished.
