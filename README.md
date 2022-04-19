@@ -66,6 +66,7 @@ A more complete example can be found in the [Ibex Super System repository](https
 In particular it includes a integration of the [PULP RISC-V debug module](https://github.com/pulp-platform/riscv-dbg).
 It targets the [Arty A7 FPGA board from Digilent](https://digilent.com/shop/arty-a7-artix-7-fpga-development-board/) and supports debugging via OpenOCD and GDB over USB (no external JTAG probe required).
 The Ibex Super System is written by lowRISC but is not an official part of Ibex, nor officially supported by lowRISC.
+I added genesys2 and zedboard examples
 
 ## Contributing
 
