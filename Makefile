@@ -74,6 +74,16 @@ build-arty-100: sw-led
 	fusesoc --cores-root=. run --target=synth --setup --build \
 		lowrisc:ibex:top_artya7 --part xc7a100tcsg324-1
 
+.PHONY: build-zedboard
+build-zedboard: sw-led
+	fusesoc --cores-root=. run --target=synth --setup --build \
+		lowrisc:ibex:top_zedboard --part xc7z020clg484-1
+
+.PHONY: program-zedboard
+program-zedboard:
+	fusesoc --cores-root=. run --target=synth --run \
+		lowrisc:ibex:top_zedboard
+
 .PHONY: program-arty
 program-arty:
 	fusesoc --cores-root=. run --target=synth --run \
