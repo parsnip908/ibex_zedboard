@@ -2,15 +2,14 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-module top_artya7 (
+module top_zedboard (
     input               IO_CLK,
     input               IO_RST_N,
     output [3:0]        LED
 );
 
   parameter int          FPGAPowerAnalysis = 0;
-  // Choose 64kb memory for normal builds and 256kb for FPGAPowerAnalysis builds. The latter will
-  // not fit in the Arty A7-35 Board FPGA.
+  // Choose 64kb memory for normal builds and 256kb for FPGAPowerAnalysis builds.
   parameter int          MEM_SIZE          = FPGAPowerAnalysis == 0 ? 64 * 1024 : 256 * 1024;
   parameter logic [31:0] MEM_START         = 32'h00000000;
   parameter logic [31:0] MEM_MASK          = MEM_SIZE-1;
