@@ -1,16 +1,17 @@
-open_project ../../lowrisc_ibex_top_zedboard_0.1.xpr
+open_project ../../lowrisc_ibex_top_genesys2_0.1.xpr
 set saif_name "detailed_power.saif"
 
 open_run impl_1
 
 # Runs a post implementation functional simulation with the memory initialized with SRAMInitFile.
 # Feeds clock (100mhz) and reset switch and records switching activity for 3ms.
-set_property top top_zedboard [current_fileset sim_1]
+set_property top top_genesys2 [current_fileset sim_1]
 launch_simulation -mode post-implementation -type functional
 open_saif "$saif_name"
 log_saif [get_objects -r *]
-add_force {/top_zedboard/IO_CLK} -radix bin {1 0ns} {0 5ns} -repeat_every 10ns
-add_force {/top_zedboard/IO_RST_N} -radix bin {1 0ns}
+add_force {/top_genesys2/IO_CLK_p} -radix bin {1 0ns} {0 5ns} -repeat_every 10ns
+add_force {/top_genesys2/IO_CLK_n} -radix bin {0 0ns} {0 5ns} -repeat_every 10ns
+add_force {/top_genesys2/IO_RST_N} -radix bin {1 0ns}
 run 3ms
 close_saif
 
@@ -18,7 +19,7 @@ close_saif
 # Reporting power using .saif generated above
 open_run impl_1
 set_operating_conditions -process maximum
-read_saif "../../lowrisc_ibex_top_zedboard_0.1.sim/sim_1/impl/func/xsim/$saif_name" 
-read_saif "../../lowrisc_ibex_top_zedboard_0.1.sim/sim_1/impl/func/xsim/$saif_name"  -strip_path top_zedboard 
+read_saif "../../lowrisc_ibex_top_genesys2_0.1.sim/sim_1/impl/func/xsim/$saif_name" 
+read_saif "../../lowrisc_ibex_top_genesys2_0.1.sim/sim_1/impl/func/xsim/$saif_name"  -strip_path top_zedboard 
 set_units -power uW
 report_power -name {detailed_power_report} -verbose -file post_implementation_power_result.log -hierarchical_depth 20
