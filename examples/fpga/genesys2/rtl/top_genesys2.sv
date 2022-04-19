@@ -2,8 +2,9 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-module top_zedboard (
-    input               IO_CLK,
+module top_genesys2 (
+    input               IO_CLK_p,
+    input               IO_CLK_n,
     input               IO_RST_N,
     output [3:0]        LED
 );
@@ -33,6 +34,18 @@ module top_zedboard (
   logic [31:0] data_addr;
   logic [31:0] data_wdata;
   logic [31:0] data_rdata;
+
+  // add logic IO_CLK for IBUFDS output
+  logic        IO_CLK;
+
+  IBUFGDS #(
+    .DIFF_TERM("TRUE"),
+    .IOSTANDARD("DEFAULT")
+) IBUFDS1_inst (
+    .O(IO_CLK),   // Clock buffer
+    .I(IO_CLK_p), // Diff_p clock
+    .IB(IO_CLK_n) // Diff_n clock
+);
 
   ibex_top #(
      .RegFile(ibex_pkg::RegFileFPGA),
