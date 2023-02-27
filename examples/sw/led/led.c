@@ -38,10 +38,23 @@ int main(int argc, char **argv) {
   // The lowest four bits of the highest byte written to the memory region named
   // "stack" are connected to the LEDs of the board.
   volatile uint8_t *var = (volatile uint8_t *) 0x0000c010;
-  *var = 0xaa;
+  *var = 0x00;
+
+  uint32_t num = 0xD9CE4B9E; 
+  // 1101_1001 
+  // 1100_1110 
+  // 0100_1011 
+  // 1001_1110
 
   while (1) {
+    for(uint i = 24; i >= 0; i -= 8)
+    {
+      usleep(1000 * 1000); // 1000 ms
+      *var = num >> i;
+    }
     usleep(1000 * 1000); // 1000 ms
-    *var = ~(*var);
+    *var = 0x00;
+    usleep(1000 * 1000); // 1000 ms
+    num = ~num;
   }
 }

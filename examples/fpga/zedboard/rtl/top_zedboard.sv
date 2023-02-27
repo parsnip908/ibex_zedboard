@@ -121,12 +121,8 @@ module top_zedboard (
     if (!rst_sys_n) begin
       leds <= 8'b0;
     end else begin
-      if (data_req && data_we && data_addr == 32'h0000c010) begin
-        for (int i = 0; i < 4; i = i + 1) begin
-          if (data_be[i] == 1'b1) begin
-            leds <= data_wdata[i*8 +: 8];
-          end
-        end
+      if (data_req && data_we && data_addr == 32'h0000c010 && data_be[0]) begin
+        leds <= data_wdata[7:0];
       end
     end
   end
