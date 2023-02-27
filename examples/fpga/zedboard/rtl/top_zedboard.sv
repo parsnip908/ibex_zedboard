@@ -5,7 +5,7 @@
 module top_zedboard (
     input               IO_CLK,
     input               IO_RST_N,
-    output [3:0]        LED
+    output [7:0]        LED
 );
 
   parameter int          FPGAPowerAnalysis = 0;
@@ -116,15 +116,15 @@ module top_zedboard (
 
   // Connect the LED output to the lower four bits of the most significant
   // byte
-  logic [3:0] leds;
+  logic [7:0] leds;
   always_ff @(posedge clk_sys or negedge rst_sys_n) begin
     if (!rst_sys_n) begin
-      leds <= 4'b0;
+      leds <= 8'b0;
     end else begin
       if (data_req && data_we) begin
         for (int i = 0; i < 4; i = i + 1) begin
           if (data_be[i] == 1'b1) begin
-            leds <= data_wdata[i*8 +: 4];
+            leds <= data_wdata[i*8 +: 8];
           end
         end
       end
