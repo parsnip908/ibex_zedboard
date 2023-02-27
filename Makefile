@@ -2,7 +2,7 @@ IBEX_CONFIG ?= small
 
 FUSESOC_CONFIG_OPTS = $(shell ./util/ibex_config.py $(IBEX_CONFIG) fusesoc_opts)
 
-all: help
+all: build-zedboard
 
 .PHONY: help
 help:
