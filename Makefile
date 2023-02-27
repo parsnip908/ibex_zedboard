@@ -78,6 +78,7 @@ build-arty-100: sw-led
 build-zedboard: sw-led
 	fusesoc --cores-root=. run --target=synth --setup --build \
 		lowrisc:ibex:top_zedboard --part xc7z020clg484-1
+	cp build/lowrisc_ibex_top_zedboard_0.1/synth-vivado/lowrisc_ibex_top_zedboard_0.1.bit top_zedboard.bit
 
 .PHONY: build-genesys2
 build-genesys2: sw-led
