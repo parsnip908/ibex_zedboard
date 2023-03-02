@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
   volatile uint8_t *var = (volatile uint8_t *) 0x0000c010;
   *var = 0x00;
 
-  uint32_t num = 0xAA55AA55; 
+  uint32_t num = 0xD9CE4B9E; 
   // 1101_1001 
   // 1100_1110 
   // 0100_1011 

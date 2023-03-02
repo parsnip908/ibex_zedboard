@@ -57,12 +57,12 @@ run-simple-system: sw-simple-hello | $(Vibex_simple_system)
 # - "build-arty-35"
 # - "build-arty-100"
 # - "program-arty"
-arty-sw-program = examples/sw/led/led.vmem
+arty-sw-program = sw/led/led.vmem
 sw-led: $(arty-sw-program)
 
 .PHONY: $(arty-sw-program)
 $(arty-sw-program):
-	cd examples/sw/led && $(MAKE)
+	cd sw/led/ && $(MAKE)
 
 .PHONY: build-arty-35
 build-arty-35: sw-led
@@ -79,6 +79,7 @@ build-zedboard: sw-led
 	fusesoc --cores-root=. run --target=synth --setup --build \
 		lowrisc:ibex:top_zedboard --part xc7z020clg484-1
 	cp build/lowrisc_ibex_top_zedboard_0.1/synth-vivado/lowrisc_ibex_top_zedboard_0.1.bit top_zedboard.bit
+	echo -ne '\007'
 
 .PHONY: build-genesys2
 build-genesys2: sw-led
