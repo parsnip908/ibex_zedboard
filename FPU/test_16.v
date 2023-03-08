@@ -56,13 +56,8 @@ end
 	class class_B(.Num(B), .Inf(Inf_B), .Neg_Inf(Neg_Inf_B), .NaN(NaN_B), .Normal(Normal_B), .Sub_Norm(Sub_Norm_B));
 	
 always @(posedge clk) begin
-	A <= Array1[counter+1];
-	B <= Array2[counter+1];
-	counter <= counter + 1;
-	Output[counter] <= C;
-	$display("C = %b, C_ref = %b", C, Output_ref[counter]);
-	
-	if (counter == 26) begin
+
+	if (counter == 27) begin
 		comparison = 1'b0;
 		for(i=0;i<27;i=i+1) begin
 			if (Output_ref[i] != Output[i]) begin
@@ -76,6 +71,11 @@ always @(posedge clk) begin
 		end
 		$stop;
 	end
+	A <= Array1[counter+1];
+	B <= Array2[counter+1];
+	counter <= counter + 1;
+	Output[counter] <= C;
+	$display("C = %b, C_ref = %b", C, Output_ref[counter]);
 	
 end
 
