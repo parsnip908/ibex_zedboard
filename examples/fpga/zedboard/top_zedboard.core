@@ -11,7 +11,18 @@ filesets:
       - lowrisc:ibex:fpga_xilinx_shared
     files:
       - rtl/top_zedboard.sv
+      - rtl/OLEDFSM.v
+      - rtl/OLEDCtrl.v
+      - rtl/delay_ms.v
+      - rtl/debouncer.v
+      - rtl/SpiCtrl.v
     file_type: systemVerilogSource
+
+  files_init:
+    files:
+      - rtl/RAMinit.txt
+      - other/characterLib.coe
+      - other/init_sequence.coe
 
   files_constraints:
     files:
@@ -53,6 +64,7 @@ targets:
     filesets:
       - files_rtl_zedboard
       - files_constraints
+      - files_init
       - files_tcl
     toplevel: top_zedboard
     parameters:

@@ -219,3 +219,28 @@ set_property -dict { PACKAGE_PIN F22   IOSTANDARD LVCMOS33 } [get_ports { IO_RST
 #set_property -dict { PACKAGE_PIN F13   IOSTANDARD LVCMOS33     } [get_ports { isns5v0_p }]; #IO_L5P_T0_AD9P_15 Sch=ad_p[9]
 #set_property -dict { PACKAGE_PIN A16   IOSTANDARD LVCMOS33     } [get_ports { isns0v95_n }]; #IO_L8N_T1_AD10N_15 Sch=ad_n[10]
 #set_property -dict { PACKAGE_PIN A15   IOSTANDARD LVCMOS33     } [get_ports { isns0v95_p }]; #IO_L8P_T1_AD10P_15 Sch=ad_p[10]
+
+
+# ----------------------------------------------------------------------------
+# Clock Source - Bank 13
+# ---------------------------------------------------------------------------- 
+# set_property PACKAGE_PIN Y9 [get_ports {clk}];  # "GCLK"
+
+# ----------------------------------------------------------------------------
+# OLED Display - Bank 13
+# ---------------------------------------------------------------------------- 
+set_property -dict { PACKAGE_PIN U10   IOSTANDARD LVCMOS33 } [get_ports {oled_dc}];
+set_property -dict { PACKAGE_PIN U9    IOSTANDARD LVCMOS33 } [get_ports {oled_res}];  # "OLED-RES"
+set_property -dict { PACKAGE_PIN AB12  IOSTANDARD LVCMOS33 } [get_ports {oled_sclk}];  # "OLED-SCLK"
+set_property -dict { PACKAGE_PIN AA12  IOSTANDARD LVCMOS33 } [get_ports {oled_sdin}];  # "OLED-SDIN"
+set_property -dict { PACKAGE_PIN U11   IOSTANDARD LVCMOS33 } [get_ports {oled_vbat}];  # "OLED-VBAT"
+set_property -dict { PACKAGE_PIN U12   IOSTANDARD LVCMOS33 } [get_ports {oled_vdd}];  # "OLED-VDD"
+
+# ----------------------------------------------------------------------------
+# User Push Buttons - Bank 34
+# ---------------------------------------------------------------------------- 
+set_property -dict { PACKAGE_PIN P16   IOSTANDARD LVCMOS33 } [get_ports {btnC}];  # "BTNC"
+set_property -dict { PACKAGE_PIN R18   IOSTANDARD LVCMOS33 } [get_ports {btnR}];  # "BTNR"
+#set_property PACKAGE_PIN R16 [get_ports {btnD}];  # "BTND"
+#set_property PACKAGE_PIN N15 [get_ports {btnL}];  # "BTNL"
+#set_property PACKAGE_PIN T18 [get_ports {btnU}];  # "BTNU"

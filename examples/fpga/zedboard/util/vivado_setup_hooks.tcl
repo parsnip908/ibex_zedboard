@@ -12,3 +12,12 @@ set FPGAPowerAnalysis [regexp {FPGAPowerAnalysis} $vlogparam_list]
 if {$FPGAPowerAnalysis == 1} {
         set_property STEPS.WRITE_BITSTREAM.TCL.PRE "${workroot}/vivado_hook_write_bitstream_pre.tcl" [get_runs impl_1]
 }
+
+puts "hello!!"
+puts [pwd]
+import_file "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/imports/src/other/characterLib.coe"
+import_file "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/imports/src/other/init_sequence.coe"
+puts "coeDone"
+import_ip "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/ip/charLib/charLib.xci"
+import_ip "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/ip/init_sequence_rom/init_sequence_rom.xci"
+import_ip "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/ip/pixel_buffer/pixel_buffer.xci"
