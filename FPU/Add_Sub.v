@@ -133,7 +133,6 @@ always @(*) begin
 					7'b 1xxxxxx : shift_sub = 0;
 					default : shift_sub = 0; 
 				endcase*/
-				$display("sig_c = %b\n", sig_c);
 				shift_sub = (sig_c[8] == 0)? shift_sub + 1: shift_sub;
 				sig_c = sig_c << shift_sub;
 				sig_cc = (sig_c[0] == 1)? ((sig_c[1] == 1)? sig_c[7:1] + 1:sig_c[7:1]) : sig_c[7:1];
