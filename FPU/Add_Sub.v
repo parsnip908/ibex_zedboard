@@ -49,15 +49,15 @@ always @(*) begin
 	  {a, b, sign_flip} = (A[14:0] >= B[14:0])? {A, B, 1'b 0}: {B, A,  1'b 1};
 	  sign_a = a[15];
 		exp_a = a[14:7];
-		sig_a = {2'b 01,a[6:0], 1'b 0};
+		sig_a = (Sub_Norm)? {2'b 00,a[6:0], 1'b 0}:{2'b 01,a[6:0], 1'b 0};
 
 		sign_b = b[15];
 		exp_b = b[14:7];
-		sig_b = {2'b 01,b[6:0], 1'b 0};
+		sig_b = (Sub_Norm_B)? {2'b 00,b[6:0], 1'b 0}:{2'b 01,b[6:0], 1'b 0};
 		shift = (a[14:7] == b[14:7])? 0: (a[14:7] - b[14:7]);
 		sig_b = sig_b >> shift;
 		
-		case ({add_sub, sign_a, sign_b}) 
+		case ({add_sub, A[15], B[15]}) 
 		    3'b 000:    begin
 		                add_sub = 0;
 		                sign = sign_flip;
