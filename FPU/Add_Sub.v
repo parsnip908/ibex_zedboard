@@ -9,7 +9,7 @@ reg add_sub;
 reg [15:0] a, b;
 reg [7:0] shift, shift_c;
 reg [3:0] shift_sub;
-reg sign_a, sign_b, sign_c, sign; 
+reg sign_a, sign_b, sign, sign_flip; 
 reg [7:0] exp_a, exp_b, exp_c;
 reg [9:0] sig_a, sig_b, sig_c;
 reg [6:0] sig_cc;
@@ -23,7 +23,7 @@ wire Sub_Norm, Sub_Norm_B;
 	Class class_A(.Num(A), .Inf(Inf), .Neg_Inf(Neg_Inf), .NaN(NaN), .Normal(Normal), .Sub_Norm(Sub_Norm));
 	Class class_B(.Num(B), .Inf(Inf_B), .Neg_Inf(Neg_Inf_B), .NaN(NaN_B), .Normal(Normal_B), .Sub_Norm(Sub_Norm_B));
 
-always @(*) begin
+  always @(*) begin
 	
 	if (NaN || NaN_B) 
 		C = 16'b 0111111111000000;
@@ -37,42 +37,79 @@ always @(*) begin
 				C = 16'b 1111_1111_1000_0000;
 		end
 	end
-	
 	else begin
-		//////////// Add or Sub //////////	
+		
+	  //if (Normal == 1) begin
+	  //////////// Add or Sub //////////	
 		add_sub = (inst == 1)? 1:0;
+	  
+	  
 	  //////////// Assign bigger number to a //////////
-		{a, b, sign} = (A[14:0] > B[14:0])? {A, B, 1'b 0}: {B, A,  1'b 1};
-		sign_a = a[15];
+	  
+	  {a, b, sign_flip} = (A[14:0] >= B[14:0])? {A, B, 1'b 0}: {B, A,  1'b 1};
+	  sign_a = a[15];
 		exp_a = a[14:7];
 		sig_a = (Sub_Norm)? {2'b 00,a[6:0], 1'b 0}:{2'b 01,a[6:0], 1'b 0};
-		
+
 		sign_b = b[15];
 		exp_b = b[14:7];
 		sig_b = (Sub_Norm_B)? {2'b 00,b[6:0], 1'b 0}:{2'b 01,b[6:0], 1'b 0};
 		shift = (a[14:7] == b[14:7])? 0: (a[14:7] - b[14:7]);
 		sig_b = sig_b >> shift;
 		
+		case ({add_sub, sign_a, sign_b}) 
+		    3'b 000:    begin
+		                add_sub = 0;
+		                sign = sign_flip;
+		                end
+		    3'b 001:    begin
+		                add_sub = 1;
+		                sign = 0;
+		                end
+		    3'b 010:    begin
+		                add_sub = 1;
+		                sign = 1;
+		                end
+		    3'b 011:    begin
+		                add_sub = 0;
+		                sign = !sign_flip;
+		                end
+		    3'b 100:    begin
+		                add_sub = 1;
+		                sign = 0;
+		                end
+		    3'b 101:    begin
+		                add_sub = 0;
+		                sign = sign_flip;
+		                end
+		    3'b 110:    begin
+		                add_sub = 0;
+		                sign = !sign_flip;
+		                end
+		    3'b 111:    begin
+		                add_sub = 1;
+		                sign = 1;
+		                end
+		endcase
 		//////////// Add //////////
 		if (add_sub == 1) begin 
-		  if (b == 16'b 0000000000000000 || b == 16'b 1000000000000000)
+		  if (b == 15'b 000000000000000)
 			C = a;
 		  else begin
 			sig_c = sig_a + sig_b;
 			shift_c = (sig_c[9] == 1)? 1:0;
 			sig_c = sig_c >> (shift_c);
 			sig_cc = (sig_c[0] == 1)? ((sig_c[1] == 1)? sig_c[7:1] + 1:sig_c[7:1]) : sig_c[7:1];
-			sign_c = sign_a;
+			//sign_c = sign_a;
 			exp_c = exp_a + shift_c;
-			C = {sign_c, exp_c, sig_cc};
+			C = {sign, exp_c, sig_cc};
 		  end
 		 end 
-		 
 		 //////////// Sub //////////
 		if (add_sub == 0) begin 
-			sign_c = (sign == 0)? sign_a: 1'b 1;
-			 if (b == 16'b 0000000000000000 || b == 16'b 1000000000000000)
-				C = {sign_c, a[14:0]};
+			//sign_c = (sign == 0)? sign_a: 1'b 1;
+			 if (b == 15'b 000000000000000)
+				C = {sign, a[14:0]};
 			else begin
 				sig_c = sig_a - sig_b;
 			if (sig_c[7:1] == 7'b 0000000) shift_sub = 7;
@@ -99,11 +136,14 @@ always @(*) begin
 				sig_c = sig_c << shift_sub;
 				sig_cc = (sig_c[0] == 1)? ((sig_c[1] == 1)? sig_c[7:1] + 1:sig_c[7:1]) : sig_c[7:1];
 				exp_c = exp_a - shift_sub;
-				C = {sign_c, exp_c, sig_cc};
+				C = {sign, exp_c, sig_cc};
+	//			 counter_c = counter + 1;
 			end
 		end
 	end
-
-end
- 
+  //$display("sig_a = %b, sig_b = %b, C = %b, shift = %d, shift_c = %d, shift_sub = %d", sig_a, sig_b, C, shift, shift_c, shift_sub);
+	end
+	//else 
+		//$display("Enter a valid number");  
+  
 endmodule 
