@@ -57,12 +57,15 @@ package ibex_pkg;
 
   typedef enum logic [6:0] {
     OPCODE_LOAD     = 7'h03,
+    OPCODE_FP_LOAD  = 7'h07, // FP_LOAD
     OPCODE_MISC_MEM = 7'h0f,
     OPCODE_OP_IMM   = 7'h13,
     OPCODE_AUIPC    = 7'h17,
     OPCODE_STORE    = 7'h23,
     OPCODE_OP       = 7'h33,
     OPCODE_LUI      = 7'h37,
+    OPCODE_FP_STORE = 7'h47, // FP_STORE
+    OPCODE_FP_OP    = 7'h53, // FP_ALU
     OPCODE_BRANCH   = 7'h63,
     OPCODE_JALR     = 7'h67,
     OPCODE_JAL      = 7'h6f,
@@ -191,7 +194,17 @@ package ibex_pkg;
     MD_OP_REM
   } md_op_e;
 
+  ////////////////////
+  // FP_ALU operations //
+  ////////////////////
+  typedef enum logic [1:0] {
+    // Arithmetics
+    FP_ALU_ADD,
+    FP_ALU_SUB,
+    FP_ALU_MUL
+  } fp_alu_op_e;
 
+  
   //////////////////////////////////
   // Control and status registers //
   //////////////////////////////////
