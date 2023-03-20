@@ -164,6 +164,7 @@ module ibex_top import ibex_pkg::*; #(
   logic [RegFileDataWidth-1:0] rf_wdata_wb_ecc;
   logic [RegFileDataWidth-1:0] rf_rdata_a_ecc, rf_rdata_a_ecc_buf;
   logic [RegFileDataWidth-1:0] rf_rdata_b_ecc, rf_rdata_b_ecc_buf;
+  logic [RegFileDataWidth-1:0] rf_rdata_a, rf_rdata_b;
 
   // Core <-> FP Register file signals
   logic [4:0]                  fp_rf_raddr_a;
@@ -174,6 +175,8 @@ module ibex_top import ibex_pkg::*; #(
   logic [RegFileDataWidth-1:0] fp_rf_rdata_a_ecc, fp_rf_rdata_a_ecc_buf;
   logic [RegFileDataWidth-1:0] fp_rf_rdata_b_ecc, fp_rf_rdata_b_ecc_buf;
 
+  logic rf_fp_wdata_sel, rf_fp_rdata_a_sel, rf_fp_rdata_b_sel;
+  logic rf_int_we_wb, fp_rf_we_wb;
   // Combined data and integrity for data and instruction busses
   logic [MemDataWidth-1:0]     data_wdata_core;
   logic [MemDataWidth-1:0]     data_rdata_core;
@@ -255,6 +258,11 @@ module ibex_top import ibex_pkg::*; #(
     .out_o(fp_rf_rdata_b_ecc_buf)
   );
 
+  assign rf_int_we_wb = rf_we_wb & (~rf_fp_wdata_sel);
+  assign fp_rf_we_wb  = rf_we_wb & (rf_fp_wdata_sel);
+  assign rf_rdata_a   = rf_fp_rdata_a_sel ? fp_rf_rdata_a_ecc_buf : rf_rdata_a_ecc_buf
+  assign rf_rdata_b   = rf_fp_rdata_b_sel ? fp_rf_rdata_b_ecc_buf : rf_rdata_b_ecc_buf
+
   // ibex_core takes integrity and data bits together. Combine the separate integrity and data
   // inputs here.
   assign data_rdata_core[31:0] = data_rdata_i;
@@ -330,8 +338,12 @@ module ibex_top import ibex_pkg::*; #(
     .rf_waddr_wb_o    (rf_waddr_wb),
     .rf_we_wb_o       (rf_we_wb),
     .rf_wdata_wb_ecc_o(rf_wdata_wb_ecc),
-    .rf_rdata_a_ecc_i (rf_rdata_a_ecc_buf),
-    .rf_rdata_b_ecc_i (rf_rdata_b_ecc_buf),
+    .rf_rdata_a_ecc_i (rf_rdata_a),
+    .rf_rdata_b_ecc_i (rf_rdata_b),
+
+    .rf_fp_wdata_sel_o    (rf_fp_wdata_sel),
+    .rf_fp_rdata_a_sel_o  (rf_fp_rdata_a_sel),
+    .rf_fp_rdata_b_sel_o  (rf_fp_rdata_b_sel),    
 
     .ic_tag_req_o      (ic_tag_req),
     .ic_tag_write_o    (ic_tag_write),
@@ -420,7 +432,7 @@ module ibex_top import ibex_pkg::*; #(
       .rdata_b_o(rf_rdata_b_ecc),
       .waddr_a_i(rf_waddr_wb),
       .wdata_a_i(rf_wdata_wb_ecc),
-      .we_a_i   (rf_we_wb),
+      .we_a_i   (rf_int_we_wb),
       .err_o    (rf_alert_major_internal)
     );
   end else if (RegFile == RegFileFPGA) begin : gen_regfile_fpga
@@ -444,7 +456,7 @@ module ibex_top import ibex_pkg::*; #(
       .rdata_b_o(rf_rdata_b_ecc),
       .waddr_a_i(rf_waddr_wb),
       .wdata_a_i(rf_wdata_wb_ecc),
-      .we_a_i   (rf_we_wb),
+      .we_a_i   (rf_int_we_wb),
       .err_o    (rf_alert_major_internal)
     );
   end else if (RegFile == RegFileLatch) begin : gen_regfile_latch
@@ -468,7 +480,7 @@ module ibex_top import ibex_pkg::*; #(
       .rdata_b_o(rf_rdata_b_ecc),
       .waddr_a_i(rf_waddr_wb),
       .wdata_a_i(rf_wdata_wb_ecc),
-      .we_a_i   (rf_we_wb),
+      .we_a_i   (rf_int_we_wb),
       .err_o    (rf_alert_major_internal)
     );
   end

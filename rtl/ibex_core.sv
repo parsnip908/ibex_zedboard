@@ -81,6 +81,10 @@ module ibex_core import ibex_pkg::*; #(
   input  logic [RegFileDataWidth-1:0]  rf_rdata_a_ecc_i,
   input  logic [RegFileDataWidth-1:0]  rf_rdata_b_ecc_i,
 
+  output logic                         rf_fp_wdata_sel_o,
+  output logic                         rf_fp_rdata_a_sel_o,
+  output logic                         rf_fp_rdata_b_sel_o,
+
   // RAMs interface
   output logic [IC_NUM_WAYS-1:0]       ic_tag_req_o,
   output logic                         ic_tag_write_o,
@@ -250,6 +254,9 @@ module ibex_core import ibex_pkg::*; #(
 
   logic [31:0] alu_adder_result_ex;    // Used to forward computed address to LSU
   logic [31:0] result_ex;
+
+  fp_alu_op_e  fp_alu_operator_ex;
+  logic        fp_alu_sel_ex;
 
   // Multiplier Control
   logic        mult_en_ex;
@@ -547,6 +554,12 @@ module ibex_core import ibex_pkg::*; #(
     .alu_operand_a_ex_o(alu_operand_a_ex),
     .alu_operand_b_ex_o(alu_operand_b_ex),
 
+    .fp_alu_operator_ex_o (fp_alu_operator_ex),
+    .fp_alu_sel_ex_o      (fp_alu_sel_ex),
+    .rf_fp_wdata_sel_o    (rf_fp_wdata_sel_o),
+    .rf_fp_rdata_a_sel_o  (rf_fp_rdata_a_sel_o),
+    .rf_fp_rdata_b_sel_o  (rf_fp_rdata_b_sel_o),
+
     .imd_val_q_ex_o (imd_val_q_ex),
     .imd_val_d_ex_i (imd_val_d_ex),
     .imd_val_we_ex_i(imd_val_we_ex),
@@ -667,6 +680,9 @@ module ibex_core import ibex_pkg::*; #(
     .alu_operand_a_i        (alu_operand_a_ex),
     .alu_operand_b_i        (alu_operand_b_ex),
     .alu_instr_first_cycle_i(instr_first_cycle_id),
+
+    .fp_alu_operator_i      (fp_alu_operator_ex),
+    .fp_sel                 (fp_alu_sel_ex),
 
     // Branch target ALU signal from ID stage
     .bt_a_operand_i(bt_a_operand),

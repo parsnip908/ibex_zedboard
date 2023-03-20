@@ -74,9 +74,10 @@ module ibex_id_stage #(
 
   // FP_ALU
   output ibex_pkg::fp_alu_op_e fp_alu_operator_ex_o,     // FP_ALU operation selection
-  output logic                 rf_wdata_sel_o,
-  output logic                 rf_rdata_a_sel_o,
-  output logic                 rf_rdata_b_sel_o,
+  output logic                 fp_alu_sel_ex_o,
+  output logic                 rf_fp_wdata_sel_o,
+  output logic                 rf_fp_rdata_a_sel_o,
+  output logic                 rf_fp_rdata_b_sel_o,
 
   // Multicycle Operation Stage Register
   input  logic [1:0]                imd_val_we_ex_i,
@@ -481,15 +482,16 @@ module ibex_id_stage #(
     .rf_ren_b_o  (rf_ren_b_dec),
 
     // ALU
-    .alu_operator_o    (alu_operator),
-    .alu_op_a_mux_sel_o(alu_op_a_mux_sel_dec),
-    .alu_op_b_mux_sel_o(alu_op_b_mux_sel_dec),
-    .alu_multicycle_o  (alu_multicycle_dec),
+    .alu_operator_o     (alu_operator),
+    .alu_op_a_mux_sel_o (alu_op_a_mux_sel_dec),
+    .alu_op_b_mux_sel_o (alu_op_b_mux_sel_dec),
+    .alu_multicycle_o   (alu_multicycle_dec),
 
-    .fp_alu_operator_o  (fp_alu_operator),     // FP_ALU operation selection
-    .rf_wdata_sel_o     (rf_wdata_sel_dec),
-    .rf_rdata_a_sel_o   (rf_rdata_a_sel_dec),
-    .rf_rdata_b_sel_o   (rf_rdata_b_sel_dec),
+    .fp_alu_operator_o   (fp_alu_operator_ex_o),     // FP_ALU operation selection
+    .fp_alu_sel_o        (fp_alu_sel_ex_o),
+    .rf_fp_wdata_sel_o   (rf_fp_wdata_sel_o),
+    .rf_fp_rdata_a_sel_o (rf_fp_rdata_a_sel_o),
+    .rf_fp_rdata_b_sel_o (rf_fp_rdata_b_sel_o),
 
     // MULT & DIV
     .mult_en_o            (mult_en_dec),

@@ -12,7 +12,7 @@
  * FPGA architectures, it will produce RAM32M primitives. Other vendors have not yet been tested.
  */
 module  ibex_fp_register_file_fpga #(
-    parameter int unsigned          DataWidth         = 16,
+    parameter int unsigned          DataWidth         = 32,
     parameter bit                   DummyInstructions = 0,
     parameter bit                   WrenCheck         = 0,
     parameter logic [DataWidth-1:0] WordZeroVal       = '0
