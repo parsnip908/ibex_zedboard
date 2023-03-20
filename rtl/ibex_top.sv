@@ -21,6 +21,7 @@ module ibex_top import ibex_pkg::*; #(
   parameter bit          RV32E            = 1'b0,
   parameter rv32m_e      RV32M            = RV32MFast,
   parameter rv32b_e      RV32B            = RV32BNone,
+  parameter rv32f_e      RV32F            = RV32FNone,
   parameter regfile_e    RegFile          = RegFileFF,
   parameter bit          BranchTargetALU  = 1'b0,
   parameter bit          WritebackStage   = 1'b0,
@@ -164,6 +165,15 @@ module ibex_top import ibex_pkg::*; #(
   logic [RegFileDataWidth-1:0] rf_rdata_a_ecc, rf_rdata_a_ecc_buf;
   logic [RegFileDataWidth-1:0] rf_rdata_b_ecc, rf_rdata_b_ecc_buf;
 
+  // Core <-> FP Register file signals
+  logic [4:0]                  fp_rf_raddr_a;
+  logic [4:0]                  fp_rf_raddr_b;
+  logic [4:0]                  fp_rf_waddr_wb;
+  logic                        fp_rf_we_wb;
+  logic [RegFileDataWidth-1:0] fp_rf_wdata_wb_ecc;
+  logic [RegFileDataWidth-1:0] fp_rf_rdata_a_ecc, fp_rf_rdata_a_ecc_buf;
+  logic [RegFileDataWidth-1:0] fp_rf_rdata_b_ecc, fp_rf_rdata_b_ecc_buf;
+
   // Combined data and integrity for data and instruction busses
   logic [MemDataWidth-1:0]     data_wdata_core;
   logic [MemDataWidth-1:0]     data_rdata_core;
@@ -235,6 +245,15 @@ module ibex_top import ibex_pkg::*; #(
     .out_o(rf_rdata_b_ecc_buf)
   );
 
+  prim_buf #(.Width(RegFileDataWidth)) u_fp_rf_rdata_a_ecc_buf (
+    .in_i (fp_rf_rdata_a_ecc),
+    .out_o(fp_rf_rdata_a_ecc_buf)
+  );
+
+  prim_buf #(.Width(RegFileDataWidth)) u_fp_rf_rdata_b_ecc_buf (
+    .in_i (fp_rf_rdata_b_ecc),
+    .out_o(fp_rf_rdata_b_ecc_buf)
+  );
 
   // ibex_core takes integrity and data bits together. Combine the separate integrity and data
   // inputs here.
@@ -259,6 +278,7 @@ module ibex_top import ibex_pkg::*; #(
     .RV32E            (RV32E),
     .RV32M            (RV32M),
     .RV32B            (RV32B),
+    .RV32F            (RV32F),
     .BranchTargetALU  (BranchTargetALU),
     .ICache           (ICache),
     .ICacheECC        (ICacheECC),
@@ -452,6 +472,32 @@ module ibex_top import ibex_pkg::*; #(
       .err_o    (rf_alert_major_internal)
     );
   end
+
+  ////////////////////////////////////
+  // FP Register file Instantiation //
+  ////////////////////////////////////
+
+  logic fp_rf_alert_major_internal;
+  if (RegFile == RegFileFF && RV32F == RV32Fbfloat) begin : gen_regfile_fp
+    ibex_fp_register_file_fpga #(
+      .DataWidth        (RegFileDataWidth),
+      .DummyInstructions(DummyInstructions),
+      // SEC_CM: DATA_REG_SW.GLITCH_DETECT
+      .WrenCheck        (RegFileWrenCheck),
+      .WordZeroVal      (RegFileDataWidth'(prim_secded_pkg::SecdedInv3932ZeroWord))
+    ) register_file_i (
+      .clk_i (clk),
+      .rst_ni(rst_ni),
+
+      .fp_raddr_a_i(fp_rf_raddr_a),
+      .fp_rdata_a_o(fp_rf_rdata_a_ecc),
+      .fp_raddr_b_i(fp_rf_raddr_b),
+      .fp_rdata_b_o(fp_rf_rdata_b_ecc),
+      .fp_waddr_a_i(fp_rf_waddr_wb),
+      .fp_wdata_a_i(fp_rf_wdata_wb_ecc),
+      .fp_we_a_i   (fp_rf_we_wb),
+      .err_o    (fp_rf_alert_major_internal)
+    );
 
   ///////////////////////////////
   // Scrambling Infrastructure //
@@ -965,7 +1011,8 @@ module ibex_top import ibex_pkg::*; #(
 
   assign alert_major_internal_o = core_alert_major_internal |
                                   lockstep_alert_major_internal |
-                                  rf_alert_major_internal;
+                                  rf_alert_major_internal |
+                                  fp_rf_alert_major_internal;
   assign alert_major_bus_o      = core_alert_major_bus | lockstep_alert_major_bus;
   assign alert_minor_o          = core_alert_minor | lockstep_alert_minor;
 

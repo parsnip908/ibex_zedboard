@@ -36,6 +36,7 @@ module top_zedboard (
 
   ibex_top #(
      .RegFile(ibex_pkg::RegFileFPGA),
+     .RV32F(ibex_pkg::RV32Fbfloat),
      .DmHaltAddr(32'h00000000),
      .DmExceptionAddr(32'h00000000)
   ) u_top (

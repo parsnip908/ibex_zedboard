@@ -12,7 +12,6 @@
  * FPGA architectures, it will produce RAM32M primitives. Other vendors have not yet been tested.
  */
 module  ibex_fp_register_file_fpga #(
-    parameter bit                   RV32E             = 0,
     parameter int unsigned          DataWidth         = 16,
     parameter bit                   DummyInstructions = 0,
     parameter bit                   WrenCheck         = 0,
@@ -21,9 +20,6 @@ module  ibex_fp_register_file_fpga #(
   // Clock and Reset
   input  logic                 clk_i,
   input  logic                 rst_ni,
-
-  input  logic                 test_en_i,
-  input  logic                 dummy_instr_id_i,
 
   //Read port R1
   input  logic [          4:0] fp_raddr_a_i,
@@ -40,7 +36,7 @@ module  ibex_fp_register_file_fpga #(
   output logic                 err_o
 );
 
-  localparam int ADDR_WIDTH = RV32E ? 4 : 5;
+  localparam int ADDR_WIDTH = 5;
   localparam int NUM_WORDS = 2 ** ADDR_WIDTH;
 
   logic [DataWidth-1:0] fp_mem[NUM_WORDS];
@@ -85,12 +81,5 @@ module  ibex_fp_register_file_fpga #(
   // Reset not used in this register file version
   logic unused_rst_ni;
   assign unused_rst_ni = rst_ni;
-
-  // Dummy instruction changes not relevant for FPGA implementation
-  logic unused_dummy_instr;
-  assign unused_dummy_instr = dummy_instr_id_i;
-  // Test enable signal not used in FPGA implementation
-  logic unused_test_en;
-  assign unused_test_en = test_en_i;
 
 endmodule

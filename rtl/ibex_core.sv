@@ -22,6 +22,7 @@ module ibex_core import ibex_pkg::*; #(
   parameter bit          RV32E             = 1'b0,
   parameter rv32m_e      RV32M             = RV32MFast,
   parameter rv32b_e      RV32B             = RV32BNone,
+  parameter rv32f_e      RV32F             = RV32FNone,
   parameter bit          BranchTargetALU   = 1'b0,
   parameter bit          WritebackStage    = 1'b0,
   parameter bit          ICache            = 1'b0,
@@ -494,6 +495,7 @@ module ibex_core import ibex_pkg::*; #(
     .RV32E          (RV32E),
     .RV32M          (RV32M),
     .RV32B          (RV32B),
+    .RV32F          (RV32F),
     .BranchTargetALU(BranchTargetALU),
     .DataIndTiming  (DataIndTiming),
     .WritebackStage (WritebackStage),
@@ -654,6 +656,7 @@ module ibex_core import ibex_pkg::*; #(
   ibex_ex_block #(
     .RV32M          (RV32M),
     .RV32B          (RV32B),
+    .RV32F          (RV32F),
     .BranchTargetALU(BranchTargetALU)
   ) ex_block_i (
     .clk_i (clk_i),
@@ -943,7 +946,8 @@ module ibex_core import ibex_pkg::*; #(
     .PMPNumRegions    (PMPNumRegions),
     .RV32E            (RV32E),
     .RV32M            (RV32M),
-    .RV32B            (RV32B)
+    .RV32B            (RV32B),
+    .RV32F            (RV32F)
   ) cs_registers_i (
     .clk_i (clk_i),
     .rst_ni(rst_ni),

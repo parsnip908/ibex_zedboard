@@ -17,6 +17,7 @@ module ibex_decoder #(
   parameter bit RV32E               = 0,
   parameter ibex_pkg::rv32m_e RV32M = ibex_pkg::RV32MFast,
   parameter ibex_pkg::rv32b_e RV32B = ibex_pkg::RV32BNone,
+  parameter ibex_pkg::rv32f_e RV32F = ibex_pkg::RV32FNone,
   parameter bit BranchTargetALU     = 0
 ) (
   input  logic                 clk_i,
@@ -73,9 +74,9 @@ module ibex_decoder #(
 
   // FP_ALU
   output ibex_pkg::fp_alu_op_e fp_alu_operator_o,     // FP_ALU operation selection
-  output logic                 rf_wdata_sel,
-  output logic                 rf_rdata_a_sel,
-  output logic                 rf_rdata_b_sel,
+  output logic                 rf_wdata_sel_o,
+  output logic                 rf_rdata_a_sel_o,
+  output logic                 rf_rdata_b_sel_o,
 
   // MULT & DIV
   output logic                 mult_en_o,             // perform integer multiplication
@@ -703,9 +704,9 @@ module ibex_decoder #(
     bt_a_mux_sel_o     = OP_A_CURRPC;
     bt_b_mux_sel_o     = IMM_B_I;
 
-    rf_wdata_sel      = 1'b0;
-    rf_rdata_a_sel    = 1'b0;
-    rf_rdata_b_sel    = 1'b0;
+    rf_wdata_sel_o     = 1'b0;
+    rf_rdata_a_sel_o   = 1'b0;
+    rf_rdata_b_sel_o   = 1'b0;
 
     opcode_alu         = opcode_e'(instr_alu[6:0]);
 
@@ -1165,8 +1166,8 @@ module ibex_decoder #(
       ////////////
      
       OPCODE_FP_STORE : begin
-        rf_rdata_a_sel      = 1'b0;
-        rf_rdata_b_sel      = 1'b1;
+        rf_rdata_a_sel_o    = 1'b0;
+        rf_rdata_b_sel_o    = 1'b1;
         alu_op_a_mux_sel_o  = OP_A_REG_A;
         alu_op_b_mux_sel_o  = OP_B_REG_B;
         fp_alu_operator_o   = FP_ALU_ADD;
@@ -1176,8 +1177,8 @@ module ibex_decoder #(
       end
 
       OPCODE_FP_LOAD : begin
-        rf_wdata_sel        = 1'b1;
-        rf_rdata_a_sel      = 1'b0;
+        rf_wdata_sel_o      = 1'b1;
+        rf_rdata_a_sel_o    = 1'b0;
         alu_op_a_mux_sel_o  = OP_A_REG_A;
         fp_alu_operator_o   = FP_ALU_ADD;
         alu_op_b_mux_sel_o  = OP_B_IMM;
@@ -1188,9 +1189,9 @@ module ibex_decoder #(
       OPCODE_FP_OP: begin
         alu_op_a_mux_sel_o = OP_A_REG_A;
         alu_op_b_mux_sel_o = OP_B_REG_B;
-        rf_wdata_sel      = 1'b1;
-        rf_rdata_a_sel    = 1'b1;
-        rf_rdata_b_sel    = 1'b1;
+        rf_wdata_sel_o    = 1'b1;
+        rf_rdata_a_sel_o  = 1'b1;
+        rf_rdata_b_sel_o  = 1'b1;
         unique case (instr_alu[31:25])
           7'b000_0000: fp_alu_operator_o = FP_ALU_ADD;
           7'b000_0100: fp_alu_operator_o = FP_ALU_SUB;

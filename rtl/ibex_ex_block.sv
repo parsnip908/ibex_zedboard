@@ -11,6 +11,7 @@
 module ibex_ex_block #(
   parameter ibex_pkg::rv32m_e RV32M           = ibex_pkg::RV32MFast,
   parameter ibex_pkg::rv32b_e RV32B           = ibex_pkg::RV32BNone,
+  parameter ibex_pkg::rv32f_e RV32F           = ibex_pkg::RV32FNone,
   parameter bit               BranchTargetALU = 0
 ) (
   input  logic                  clk_i,

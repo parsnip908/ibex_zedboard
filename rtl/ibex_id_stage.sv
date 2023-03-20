@@ -21,6 +21,7 @@ module ibex_id_stage #(
   parameter bit               RV32E           = 0,
   parameter ibex_pkg::rv32m_e RV32M           = ibex_pkg::RV32MFast,
   parameter ibex_pkg::rv32b_e RV32B           = ibex_pkg::RV32BNone,
+  parameter ibex_pkg::rv32f_e RV32F           = ibex_pkg::RV32FNone,
   parameter bit               DataIndTiming   = 1'b0,
   parameter bit               BranchTargetALU = 0,
   parameter bit               WritebackStage  = 0,
@@ -70,6 +71,12 @@ module ibex_id_stage #(
   output ibex_pkg::alu_op_e         alu_operator_ex_o,
   output logic [31:0]               alu_operand_a_ex_o,
   output logic [31:0]               alu_operand_b_ex_o,
+
+  // FP_ALU
+  output ibex_pkg::fp_alu_op_e fp_alu_operator_ex_o,     // FP_ALU operation selection
+  output logic                 rf_wdata_sel_o,
+  output logic                 rf_rdata_a_sel_o,
+  output logic                 rf_rdata_b_sel_o,
 
   // Multicycle Operation Stage Register
   input  logic [1:0]                imd_val_we_ex_i,
@@ -427,6 +434,7 @@ module ibex_id_stage #(
     .RV32E          (RV32E),
     .RV32M          (RV32M),
     .RV32B          (RV32B),
+    .RV32F          (RV32F),
     .BranchTargetALU(BranchTargetALU)
   ) decoder_i (
     .clk_i (clk_i),
@@ -477,6 +485,11 @@ module ibex_id_stage #(
     .alu_op_a_mux_sel_o(alu_op_a_mux_sel_dec),
     .alu_op_b_mux_sel_o(alu_op_b_mux_sel_dec),
     .alu_multicycle_o  (alu_multicycle_dec),
+
+    .fp_alu_operator_o  (fp_alu_operator),     // FP_ALU operation selection
+    .rf_wdata_sel_o     (rf_wdata_sel_dec),
+    .rf_rdata_a_sel_o   (rf_rdata_a_sel_dec),
+    .rf_rdata_b_sel_o   (rf_rdata_b_sel_dec),
 
     // MULT & DIV
     .mult_en_o            (mult_en_dec),
