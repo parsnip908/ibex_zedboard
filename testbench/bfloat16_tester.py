@@ -146,4 +146,3 @@ for lines in array_multiply:
 
 file_sum.close()
 file_multiply.close()
-
