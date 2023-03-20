@@ -24,6 +24,7 @@ module ibex_ex_block #(
 
   // FP_ALU
   input  ibex_pkg::fp_alu_op_e  fp_alu_operator_i,
+  input  logic                  fp_sel,
 
   // Branch Target ALU
   // All of these signals are unusued when BranchTargetALU == 0
