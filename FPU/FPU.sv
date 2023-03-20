@@ -1,25 +1,25 @@
 module FPU ( 
-	input           operator_i,
-	input  [15:0]	operand_a_i,
-	input  [15:0]	operand_b_i,
-	output [15:0]	out
+	input  ibex_pkg::fp_alu_op_e operator_i,
+  	input  logic [15:0]       operand_a_i,
+  	input  logic [15:0]       operand_b_i,
+	output logic [15:0]       result_o
 );
 
-wire [15:0] add_out, mult_out;
+wire [15:0] add_sub_out, mult_out;
 
 Add_Sub Add(
-	.inst(operator_i), 
+	.operator_i(operator_i), 
 	.A(operand_a_i), 
 	.B(operand_b_i), 
 	.C(add_out)
 	);
 	
 Mult Mult(
-	.inst(operator_i), 
+	.operator_i(operator_i), 
 	.A(operand_a_i), 
 	.B(operand_b_i), 
 	.C(mult_out)
 	);
 	
-assign out = (inst)? add_out:mult_out;
+assign result_o = (operator_i == (FP_ALU_ADD || FP_ALU_SUB))? add_sub_out : mult_out;
 endmodule 

@@ -1,4 +1,4 @@
-module Class(
+module FP_Class(
 	input [15:0] Num,
 	output Inf,
 	output Neg_Inf,
