@@ -43,7 +43,7 @@ def bf16_add(num1, num2):
         return 'NaN'
     elif(num1 == '+inf' or num1 == '-inf' or num2 == '+inf' or num2 == '-inf'):
         return 'inf'
-    elif(num1 == '+0' or num1 == '-0' and num2 == '+0' or num2 == '-0'): #both 0
+    elif((num1 == '+0' or num1 == '-0') and (num2 == '+0' or num2 == '-0')): #both 0
         return 0.0
     elif(num1 == '+0' or num1 == '-0'): #num 1 = 0
         return num2
@@ -60,23 +60,15 @@ def bf16_multiply(num1, num2):
         return 'inf'
     elif(num1 == '+0' or num1 == '-0' or num2 == '+0' or num2 == '-0'): #both 0
         return 0.0
-    # elif(num1 == '+0' or num1 == '-0'): #num 1 = 0
-    #     return 
-    # elif(num2 == '+0' or num2 == '-0'): #num2 = 0
-    #     return num1
     else:
         return num1 * num2
 
-
-file1 = open("Array1.txt", 'r')
-file2 = open("Array2.txt", 'r')
+file1 = open("Array1.txt", 'r') #specify first file with random numbers
+file2 = open("Array2.txt", 'r') #specify second file with random numbers
 array1 = []
 array2 = []
 array_sum = []
-array_multiply = []
-
-array_result_sum = []
-array_result_multiply = []
+array_product = []
 
 #read both files and add to separate arrays as decimal floats
 
@@ -89,6 +81,9 @@ for lines in file2:
 file1.close()
 file2.close()
 
+array_result_sum = []
+array_result_product = []
+
 #add the contents
 
 for i in range(len(array1)):
@@ -97,7 +92,7 @@ for i in range(len(array1)):
 #multiply the contents
 
 for i in range(len(array1)):
-    array_multiply.append(bf16_multiply(array1[i],array2[i])) 
+    array_product.append(bf16_multiply(array1[i],array2[i])) 
 
 #convert back to bfloat16
 
@@ -108,41 +103,93 @@ for lines in array_sum:
     else:
         array_result_sum.append(lines)
 
-for lines in array_multiply:
+for lines in array_product:
     if(type(lines)== float):
          x = float2bin32(lines)
-         array_result_multiply.append(x[0:16])
+         array_result_product.append(x[0:16])
     else:
-        array_result_multiply.append(lines)
+        array_result_product.append(lines)
 
 #Write to file
 
-file_result_sum = open("Results_sum.txt", "w")
-file_result_multiply = open("Results_multiply.txt", "w")
+file_result_sum = open("Sum_python.txt", "w")
+file_result_multiply = open("Product_python.txt", "w")
 
 for lines in array_result_sum:
     file_result_sum.write(lines+"\n")
 
-for lines in array_result_multiply:
+for lines in array_result_product:
     file_result_multiply.write(lines+"\n")
 
 file_result_sum.close()
 file_result_multiply.close()
 
 
+#read verilog sum output
+
+file_verilog_sum = open("Sum_verilog.txt", "r")
+
+array_verilog_sum = []
+
+for lines in file_verilog_sum:
+    array_verilog_sum.append(lines)
+
+file_verilog_sum.close()
+
+#write comparison results to another file
+
+file_compare_sum = open("Compare_Sum.txt", "w")
+
+for i in range(len(array_result_sum)):
+    if(array_result_sum[i].strip() == array_verilog_sum[i].strip()):
+        # print("line " + str(i+1) + " match")
+        file_compare_sum.write(("line " + str(i+1) + " match\n"))
+    else:
+        # print("line " + str(i+1) + " mismatch")
+        file_compare_sum.write(("line " + str(i+1) + " mismatch\n"))
+
+file_compare_sum.close()
+
+
+
+# for i in range(len(array_verilog_sum)):
+#     print(array_result_sum[i])
+#     print(array_verilog_sum[i])
+#     # print("\n")
 
 
 #intermediary files, for checking only
 
 file_sum= open("Results_decimal_sum.txt", "w")
-file_multiply= open("Results_decimal_multiply.txt", "w")
+# file_multiply= open("Results_decimal_multiply.txt", "w")
 
 
 for lines in array_sum:
     file_sum.write(str(lines)+"\n")
 
-for lines in array_multiply:
-    file_multiply.write(str(lines)+"\n")
+# for lines in array_multiply:
+#     file_multiply.write(str(lines)+"\n")
 
 file_sum.close()
-file_multiply.close()
+# file_multiply.close()
+
+
+
+########################################
+
+#read verilog product output
+
+# file_verilog_product = open("Mul.txt", "r")
+
+# array_verilog_product = []
+
+# for lines in file_verilog_product:
+#     array_verilog_product.append(lines)
+
+# file_verilog_product.close()
+
+# for i in range(len(array_verilog_product)):
+#     if(array_result_multiply[i].strip() == array_verilog_product[i].strip()):
+#         print("line " + str(i+1) + " match")
+#     else:
+#         print("line " + str(i+1) + " mismatch")
