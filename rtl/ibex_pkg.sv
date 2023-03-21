@@ -53,7 +53,7 @@ package ibex_pkg;
 
   typedef enum integer {
     RV32FNone       = 0,
-    RV32Fbfloat     = 1,
+    RV32Fbfloat     = 1
   } rv32f_e;
 
   /////////////

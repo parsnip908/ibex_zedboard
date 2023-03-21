@@ -5,6 +5,7 @@ module Mult(
 	output logic [15:0]       C
 
 );
+import ibex_pkg::*;
 
 reg sign_c; 
 reg [7:0] exp_a, exp_b, exp_c;

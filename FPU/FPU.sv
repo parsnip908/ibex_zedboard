@@ -5,6 +5,8 @@ module FPU (
 	output logic [15:0]       result_o
 );
 
+import ibex_pkg::*;
+
 wire [15:0] add_sub_out, mult_out;
 
 Add_Sub Add(

@@ -260,8 +260,8 @@ module ibex_top import ibex_pkg::*; #(
 
   assign rf_int_we_wb = rf_we_wb & (~rf_fp_wdata_sel);
   assign fp_rf_we_wb  = rf_we_wb & (rf_fp_wdata_sel);
-  assign rf_rdata_a   = rf_fp_rdata_a_sel ? fp_rf_rdata_a_ecc_buf : rf_rdata_a_ecc_buf
-  assign rf_rdata_b   = rf_fp_rdata_b_sel ? fp_rf_rdata_b_ecc_buf : rf_rdata_b_ecc_buf
+  assign rf_rdata_a   = rf_fp_rdata_a_sel ? fp_rf_rdata_a_ecc_buf : rf_rdata_a_ecc_buf;
+  assign rf_rdata_b   = rf_fp_rdata_b_sel ? fp_rf_rdata_b_ecc_buf : rf_rdata_b_ecc_buf;
 
   // ibex_core takes integrity and data bits together. Combine the separate integrity and data
   // inputs here.
@@ -510,6 +510,7 @@ module ibex_top import ibex_pkg::*; #(
       .fp_we_a_i   (fp_rf_we_wb),
       .err_o    (fp_rf_alert_major_internal)
     );
+  end
 
   ///////////////////////////////
   // Scrambling Infrastructure //
