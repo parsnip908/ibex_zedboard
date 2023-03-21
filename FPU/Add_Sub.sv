@@ -11,7 +11,7 @@ reg [7:0] shift, shift_c;
 reg [3:0] shift_sub;
 reg  sign, sign_flip; 
 reg [7:0] exp_a, exp_b, exp_c;
-reg [9:0] sig_a, sig_b, sig_c;
+reg [24:0] sig_a, sig_b, sig_c;
 reg [6:0] sig_cc;
 
 wire Inf, Inf_B;
@@ -46,10 +46,10 @@ always @(*) begin
 			//////////// Assign bigger number to a //////////
 			{a, b, sign_flip} = (A[14:0] >= B[14:0])? {A, B, 1'b 0}: {B, A,  1'b 1};
 			exp_a = a[14:7];
-			sig_a = (Sub_Norm)? {2'b 00,a[6:0], 1'b 0}:{2'b 01,a[6:0], 1'b 0};
+			sig_a = (Sub_Norm)? {2'b 00,a[6:0], 1'b 0}:{2'b 01,a[6:0], 16'b 0000_0000_0000_0000};
 
 			exp_b = b[14:7];
-			sig_b = (Sub_Norm_B)? {2'b 00,b[6:0], 1'b 0}:{2'b 01,b[6:0], 1'b 0};
+			sig_b = (Sub_Norm_B)? {2'b 00,b[6:0], 1'b 0}:{2'b 01,b[6:0], 16'b 0000_0000_0000_0000};
 			shift = (a[14:7] == b[14:7])? 0: (a[14:7] - b[14:7]);
 			sig_b = sig_b >> shift;
 			//////////// Reassing operation based on sign //////////
@@ -95,7 +95,12 @@ always @(*) begin
 					sig_c = sig_a + sig_b;
 					shift_c = (sig_c[9] == 1)? 1:0;
 					sig_c = sig_c >> (shift_c);
-					sig_cc = (sig_c[0] == 1)? ((sig_c[1] == 1)? sig_c[7:1] + 1:sig_c[7:1]) : sig_c[7:1];
+					casex (sig_c[15:0])
+						16'b 0000_0000_0000_0000 :	sig_cc = sig_c[22:16];
+						16'b 1000_0000_0000_0000 :	sig_cc = (sig_c[16] == 1)? sig_c[22:16] + 1 : sig_c[22:16];
+						16'b 1xxx_xxxx_xxxx_xxxx :	sig_cc =  sig_c[22:16] + 1;
+						default: sig_cc = sig_c[22:16];
+					endcase 
 					exp_c = exp_a + shift_c;
 					C = {sign, exp_c, sig_cc};
 				end
@@ -129,7 +134,12 @@ always @(*) begin
 					endcase*/
 					shift_sub = (sig_c[8] == 0)? shift_sub + 1: shift_sub;
 					sig_c = sig_c << shift_sub;
-					sig_cc = (sig_c[0] == 1)? ((sig_c[1] == 1)? sig_c[7:1] + 1:sig_c[7:1]) : sig_c[7:1];
+					casex (sig_c[15:0])
+						16'b 0000_0000_0000_0000 :	sig_cc = sig_c[22:16];
+						16'b 1000_0000_0000_0000 :	sig_cc = (sig_c[16] == 1)? sig_c[22:16] + 1 : sig_c[22:16];
+						16'b 1xxx_xxxx_xxxx_xxxx :	sig_cc =  sig_c[22:16] + 1;
+						default: sig_cc = sig_c[22:16];
+					endcase 
 					exp_c = exp_a - shift_sub;
 					C = {sign, exp_c, sig_cc};
 				end
