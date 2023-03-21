@@ -6,7 +6,7 @@
 
 PROGRAM ?= led
 PROGRAM_CFLAGS = -Wall -g -Os
-ARCH = rv32imc
+ARCH = rv32imfczfh
 # ARCH = rv32im # to disable compressed instructions
 SRCS = $(PROGRAM).c
 
