@@ -47,10 +47,10 @@ always @(*) begin
 			//////////// Assign bigger number to a //////////
 			{a, b, sign_flip} = (A[14:0] >= B[14:0])? {A, B, 1'b 0}: {B, A,  1'b 1};
 			exp_a = a[14:7];
-			sig_a = (Sub_Norm)? {2'b 00,a[6:0], 1'b 0}:{2'b 01,a[6:0], 16'b 0000_0000_0000_0000};
+			sig_a = (Sub_Norm)? {2'b 00,a[6:0], , 16'b 0000_0000_0000_0000}:{2'b 01,a[6:0], 16'b 0000_0000_0000_0000};
 
 			exp_b = b[14:7];
-			sig_b = (Sub_Norm_B)? {2'b 00,b[6:0], 1'b 0}:{2'b 01,b[6:0], 16'b 0000_0000_0000_0000};
+			sig_b = (Sub_Norm_B)? {2'b 00,b[6:0], , 16'b 0000_0000_0000_0000}:{2'b 01,b[6:0], 16'b 0000_0000_0000_0000};
 			shift = (a[14:7] == b[14:7])? 0: (a[14:7] - b[14:7]);
 			sig_b = sig_b >> shift;
 			//////////// Reassing operation based on sign //////////
@@ -94,7 +94,7 @@ always @(*) begin
 					C = a;
 				else begin
 					sig_c = sig_a + sig_b;
-					shift_c = (sig_c[9] == 1)? 1:0;
+					shift_c = (sig_c[24] == 1)? 1:0;
 					sig_c = sig_c >> (shift_c);
 					casex (sig_c[15:0])
 						16'b 0000_0000_0000_0000 :	sig_cc = sig_c[22:16];
