@@ -112,15 +112,15 @@ always @(*) begin
 					C = {sign, a[14:0]};
 				else begin
 					sig_c = sig_a - sig_b;
-				if (sig_c[8] == 1'b 1) shift_sub = 0;
-				else if (sig_c[7:1] == 7'b 0000000) shift_sub = 7;
-				else if (sig_c[7:1] == 7'b 0000001) shift_sub = 6;
-				else if (sig_c[7:2] == 6'b 000001) shift_sub = 5;
-				else if (sig_c[7:3] == 5'b 00001) shift_sub = 4;
-				else if (sig_c[7:4] == 4'b 0001) shift_sub = 3;
-				else if (sig_c[7:5] == 3'b 001) shift_sub = 2;
-				else if (sig_c[7:6] == 2'b 01) shift_sub = 1;
-				else if (sig_c[7] == 1'b 1) shift_sub = 0;
+				if (sig_c[23] == 1'b 1) shift_sub = 0;
+				else if (sig_c[22:16] == 7'b 0000000) shift_sub = 7;
+				else if (sig_c[22:16] == 7'b 0000001) shift_sub = 6;
+				else if (sig_c[22:17] == 6'b 000001) shift_sub = 5;
+				else if (sig_c[22:18] == 5'b 00001) shift_sub = 4;
+				else if (sig_c[22:19] == 4'b 0001) shift_sub = 3;
+				else if (sig_c[22:20] == 3'b 001) shift_sub = 2;
+				else if (sig_c[22:21] == 2'b 01) shift_sub = 1;
+				else if (sig_c[22] == 1'b 1) shift_sub = 0;
 				else shift_sub = 0;
 					/*case (sig_c[7:1])
 						7'b 0000000 : shift_sub = 7;
