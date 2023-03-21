@@ -40,11 +40,13 @@ int main(int argc, char **argv) {
   volatile uint8_t *var = (volatile uint8_t *) 0x0000c010;
   *var = 0x00;
 
-  uint32_t num = 0xD9CE4B9E; 
-  // 1101_1001 
-  // 1100_1110 
-  // 0100_1011 
-  // 1001_1110
+  uint32_t num = 0x40dd4086; 
+  uint16_t fp_in_a = 0x40dd;
+  uint16_t fp_in_b = 0x4086;
+  uint16_t fp_result = 0;
+
+  fp_result = fp_in_a + fp_in_b;
+
 
   while (1) {
     for(int i = 24; i >= 0; i -= 8)

@@ -570,26 +570,28 @@ module ibex_decoder #(
       // FP_ALU //
       ////////////
 
-      OPCODE_FP_LOAD:  
+      OPCODE_FP_LOAD: begin
         rf_ren_a_o          = 1'b1;
         data_req_o          = 1'b1;
         data_type_o         = 2'b01;
         data_sign_extension_o = 0;
         illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
+      end
   
-      OPCODE_FP_STORE: 
+      OPCODE_FP_STORE: begin
         rf_ren_a_o         = 1'b1;
         rf_ren_b_o         = 1'b1;
         data_req_o         = 1'b1;
         data_we_o          = 1'b1;
         illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
+      end
 
       OPCODE_FP_OP : begin
         unique case (instr[31:25])
           7'b000_0010, 
           7'b000_0110,
           7'b000_1010: illegal_insn = 1'b0; 
-          default: illegal_insn = 1'b1;; 
+          default: illegal_insn = 1'b1; 
         endcase
       end
       

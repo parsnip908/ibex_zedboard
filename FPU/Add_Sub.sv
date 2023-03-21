@@ -4,6 +4,7 @@ module Add_Sub (
   	input  logic [15:0]       B,
 	output logic [15:0]       C
 );
+import ibex_pkg::*;
 
 reg add_sub;
 reg [15:0] a, b;
