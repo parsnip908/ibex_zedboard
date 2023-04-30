@@ -13,7 +13,7 @@ Add_Sub Add(
 	.operator_i(operator_i), 
 	.A(operand_a_i), 
 	.B(operand_b_i), 
-	.C(add_out)
+	.C(add_sub_out)
 	);
 	
 Mult Mult(
@@ -23,5 +23,5 @@ Mult Mult(
 	.C(mult_out)
 	);
 	
-assign result_o = (operator_i == (FP_ALU_ADD || FP_ALU_SUB))? add_sub_out : mult_out;
-endmodule 
+assign result_o = (operator_i == FP_ALU_ADD || operator_i == FP_ALU_SUB)? add_sub_out : mult_out;
+endmodule
