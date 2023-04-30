@@ -1177,13 +1177,35 @@ module ibex_decoder #(
       ////////////
       // FP_ALU //
       ////////////
-     
+      /*
+       OPCODE_STORE: begin
+        alu_op_a_mux_sel_o = OP_A_REG_A;
+        alu_op_b_mux_sel_o = OP_B_REG_B;
+        alu_operator_o     = ALU_ADD;
+
+        if (!instr_alu[14]) begin
+          // offset from immediate
+          imm_b_mux_sel_o     = IMM_B_S;
+          alu_op_b_mux_sel_o  = OP_B_IMM;
+        end
+      end
+
+      OPCODE_LOAD: begin
+        alu_op_a_mux_sel_o  = OP_A_REG_A;
+
+        // offset from immediate
+        alu_operator_o      = ALU_ADD;
+        alu_op_b_mux_sel_o  = OP_B_IMM;
+        imm_b_mux_sel_o     = IMM_B_I;
+      end
+    
+      */
       OPCODE_FP_STORE : begin
         rf_fp_rdata_a_sel_o = 1'b0;
         rf_fp_rdata_b_sel_o = 1'b1;
         alu_op_a_mux_sel_o  = OP_A_REG_A;
-        alu_op_b_mux_sel_o  = OP_B_REG_B;
-        fp_alu_operator_o   = FP_ALU_ADD;
+        //alu_op_b_mux_sel_o  = OP_B_REG_B;
+        alu_operator_o     = ALU_ADD;
         // offset from immediate
         imm_b_mux_sel_o     = IMM_B_S;
         alu_op_b_mux_sel_o  = OP_B_IMM;
@@ -1193,7 +1215,7 @@ module ibex_decoder #(
         rf_fp_wdata_sel_o   = 1'b1;
         rf_fp_rdata_a_sel_o = 1'b0;
         alu_op_a_mux_sel_o  = OP_A_REG_A;
-        fp_alu_operator_o   = FP_ALU_ADD;
+        alu_operator_o     = ALU_ADD;
         alu_op_b_mux_sel_o  = OP_B_IMM;
         imm_b_mux_sel_o     = IMM_B_I;
 
