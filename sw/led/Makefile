@@ -5,7 +5,7 @@
 # Generate a baremetal application
 
 PROGRAM ?= led
-PROGRAM_CFLAGS = -Wall -g -Os
+PROGRAM_CFLAGS = -Wall
 ARCH = rv32imfczfh
 # ARCH = rv32im # to disable compressed instructions
 SRCS = $(PROGRAM).c
@@ -24,7 +24,7 @@ CFLAGS ?= -march=$(ARCH) -mabi=ilp32 -static -mcmodel=medany \
 OBJS := ${SRCS:.c=.o} ${CRT:.S=.o}
 DEPS = $(OBJS:%.o=%.d)
 
-OUTFILES = $(PROGRAM).elf $(PROGRAM).vmem $(PROGRAM).bin $(PROGRAM).dis
+OUTFILES = $(PROGRAM).elf $(PROGRAM).vmem $(PROGRAM).bin $(PROGRAM).dis $(PROGRAM).s
 
 all: $(OUTFILES)
 
@@ -58,3 +58,6 @@ clean:
 
 distclean: clean
 	$(RM) -f $(OUTFILES)
+
+%.s: %.c
+	$(CC) $(CFLAGS) -MMD -S $(INCS) -o $@ $<

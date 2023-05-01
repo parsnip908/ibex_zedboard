@@ -38,25 +38,57 @@ int main(int argc, char **argv) {
   // The lowest four bits of the highest byte written to the memory region named
   // "stack" are connected to the LEDs of the board.
   volatile uint8_t *var = (volatile uint8_t *) 0x0000c010;
+  // volatile uint8_t *result = (volatile uint8_t *) 0x0000c020;
   *var = 0x00;
+  // usleep(1000 * 1000); // 1000 ms
+  *var = 0xFF;
+  // usleep(1000 * 1000); // 1000 ms
+  *var = 0x00;
+  // usleep(1000 * 1000); // 1000 ms
 
-  uint32_t num = 0x40dd4086; 
-  uint16_t fp_in_a = 0x40dd;
-  uint16_t fp_in_b = 0x4086;
-  uint16_t fp_result = 0;
+  uint16_t num = 0xAA;
 
-  fp_result = fp_in_a + fp_in_b;
+  asm volatile(
+      "li t1, 16518\n"
+      "li t2, 16605\n"
+      "li t3, 49184\n"
+      "sh t1, 0(t3)\n"
+      "sh t2, 4(t3)\n"
+      "flh ft1, 0(t3)\n"
+      "flh ft2, 4(t3)\n"
+      "fadd.h ft3, ft2, ft1\n"
+  );
+  *var = 0xFF;
+  // usleep(1000 * 1000); // 1000 ms
+  *var = 0x00;
+  // usleep(1000 * 1000); // 1000 ms
+
+  asm volatile(
+      "fsh ft3, 8(t3)\n"
+  );
+
+  *var = 0xFF;
+  // usleep(1000 * 1000); // 1000 ms
+  *var = 0x00;
+  // usleep(1000 * 1000); // 1000 ms
 
 
-  while (1) {
-    for(int i = 24; i >= 0; i -= 8)
-    {
-      usleep(1000 * 1000); // 1000 ms
-      *var = num >> i;
-    }
+  num = *((volatile uint16_t *)(0x0000c020 + 8));
+
+  //0xA00A;//
+
+  // while (1) {
+
     usleep(1000 * 1000); // 1000 ms
+    *var = num % 0x10;
+
+    // usleep(1000 * 1000); // 1000 ms
+    *var = num >> 8;
+
+    // usleep(1000 * 1000); // 1000 ms
     *var = 0x00;
-    usleep(1000 * 1000); // 1000 ms
-    num = ~num;
-  }
+    // usleep(1000 * 1000); // 1000 ms
+    *var = 0xFF;
+
+  // }
 }
