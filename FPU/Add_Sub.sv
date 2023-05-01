@@ -114,7 +114,7 @@ always_comb begin
 				7'b 1xxxxxx : shift_sub = 0;
 				default : shift_sub = 0; 
 			endcase*/
-			shift_sub = (sig_c[8] == 0)? shift_sub + 1: shift_sub;
+			shift_sub = (sig_c[23] == 0)? shift_sub + 1: shift_sub;
 			sig_c = sig_c << shift_sub;
 			case (sig_c[15:0])
 				16'b 0000_0000_0000_0000 :	sig_cc = sig_c[22:16];

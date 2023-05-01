@@ -2,7 +2,7 @@
 
 module tb_Add_Sub_test;
 
-reg inst;
+reg operator_i;
 reg [15:0] A, B;
 wire [15:0] C;
 
@@ -17,11 +17,11 @@ reg [4:0] counter;
 reg clk;
 integer in_1, in_2, out, i;
 
-	Add_Sub Add(.inst(inst), .A(A), .B(B), .C(C));
+	Add_Sub Add(.operator_i(operator_i), .A(A), .B(B), .C(C));
 
 
 initial begin
-	inst = 1; 
+	operator_i = 1; 
     in_1 = $fopen("Array1.txt", "w");
     in_2 = $fopen("Array2.txt", "w");
     out = $fopen("Sum.txt", "w");
