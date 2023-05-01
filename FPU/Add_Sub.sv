@@ -138,11 +138,11 @@ always_comb begin
 		else begin
 			if(Inf || Inf_B)
 				C = 16'b 0111_1111_1000_0000;
-			if(Neg_Inf || Neg_Inf_B)
+			else
 				C = 16'b 1111_1111_1000_0000;
 		end
 	end
 	else 
-	C = C_norm;
+		C = C_norm;
 end
 endmodule

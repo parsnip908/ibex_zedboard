@@ -67,9 +67,9 @@ package ibex_pkg;
     OPCODE_OP_IMM   = 7'h13,
     OPCODE_AUIPC    = 7'h17,
     OPCODE_STORE    = 7'h23,
+    OPCODE_FP_STORE = 7'h27, // FP_STORE
     OPCODE_OP       = 7'h33,
     OPCODE_LUI      = 7'h37,
-    OPCODE_FP_STORE = 7'h47, // FP_STORE
     OPCODE_FP_OP    = 7'h53, // FP_ALU
     OPCODE_BRANCH   = 7'h63,
     OPCODE_JALR     = 7'h67,
