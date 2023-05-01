@@ -6,24 +6,25 @@ module Add_Sub (
 );
 import ibex_pkg::*;
 
-reg add_sub;
-reg [15:0] a, b;
-reg [7:0] shift, shift_c;
-reg [3:0] shift_sub;
-reg  sign, sign_flip; 
-reg [7:0] exp_a, exp_b, exp_c;
-reg [24:0] sig_a, sig_b, sig_c;
-reg [6:0] sig_cc;
+logic add_sub;
+logic [15:0] a;
+logic [14:0] b;
+logic [7:0] shift, shift_c;
+logic [3:0] shift_sub;
+logic  sign, sign_flip; 
+logic [7:0] exp_a, exp_c;
+logic [24:0] sig_a, sig_b, sig_c;
+logic [6:0] sig_cc;
 
 wire Inf, Inf_B;
 wire Neg_Inf, Neg_Inf_B;
 wire NaN, NaN_B;
 wire Sub_Norm, Sub_Norm_B;
 
-	FP_Class class_A(.Num(A), .Inf(Inf), .Neg_Inf(Neg_Inf), .NaN(NaN), .Sub_Norm(Sub_Norm));
-	FP_Class class_B(.Num(B), .Inf(Inf_B), .Neg_Inf(Neg_Inf_B), .NaN(NaN_B), .Sub_Norm(Sub_Norm_B));
+	FP_Class class_A(.Num(A), .Inf(Inf), .Neg_Inf(Neg_Inf), .NaN(NaN), .Normal(), .Sub_Norm(Sub_Norm));
+	FP_Class class_B(.Num(B), .Inf(Inf_B), .Neg_Inf(Neg_Inf_B), .NaN(NaN_B), .Normal(), .Sub_Norm(Sub_Norm_B));
 
-always @(*) begin
+always_comb begin
 
 	//////////// Add or Sub //////////	
 	add_sub = (operator_i == FP_ALU_ADD)? 1:0;
@@ -47,7 +48,6 @@ always @(*) begin
 		exp_a = a[14:7];
 		sig_a = (Sub_Norm)? {2'b 00,a[6:0], 16'b 0000_0000_0000_0000}:{2'b 01,a[6:0], 16'b 0000_0000_0000_0000};
 
-		exp_b = b[14:7];
 		sig_b = (Sub_Norm_B)? {2'b 00,b[6:0], 16'b 0000_0000_0000_0000}:{2'b 01,b[6:0], 16'b 0000_0000_0000_0000};
 		shift = (a[14:7] == b[14:7])? 0: (a[14:7] - b[14:7]);
 		sig_b = sig_b >> shift;
@@ -132,7 +132,7 @@ always @(*) begin
 				endcase*/
 				shift_sub = (sig_c[8] == 0)? shift_sub + 1: shift_sub;
 				sig_c = sig_c << shift_sub;
-				casex (sig_c[15:0])
+				case (sig_c[15:0])
 					16'b 0000_0000_0000_0000 :	sig_cc = sig_c[22:16];
 					16'b 1000_0000_0000_0000 :	sig_cc = (sig_c[16] == 1)? sig_c[22:16] + 1 : sig_c[22:16];
 					default: sig_cc = (sig_c[15])? sig_c[22:16] + 1 : sig_c[22:16];
@@ -145,4 +145,4 @@ always @(*) begin
   //$display("sig_a = %b, sig_b = %b, C = %b, shift = %d, shift_c = %d, shift_sub = %d", sig_a, sig_b, C, shift, shift_c, shift_sub);
 end
   
-endmodule 
+endmodule

@@ -1,5 +1,4 @@
 module Mult(
-	input  ibex_pkg::fp_alu_op_e operator_i,
   	input  logic [15:0]       A,
   	input  logic [15:0]       B,
 	output logic [15:0]       C
@@ -7,20 +6,20 @@ module Mult(
 );
 import ibex_pkg::*;
 
-reg sign_c; 
-reg [7:0] exp_a, exp_b, exp_c, exp_norm;
-reg [7:0] sig_a, sig_b;
-reg [15:0] sig_c;
-reg [6:0] sig_cc;
+logic sign_c; 
+logic [7:0] exp_a, exp_b, exp_c, exp_norm;
+logic [7:0] sig_a, sig_b;
+logic [15:0] sig_c;
+logic [6:0] sig_cc;
 
 wire Inf, Inf_B;
 wire Neg_Inf, Neg_Inf_B;
 wire NaN, NaN_B;
 
-	FP_Class class_A(.Num(A), .Inf(Inf), .Neg_Inf(Neg_Inf), .NaN(NaN));
-	FP_Class class_B(.Num(B), .Inf(Inf_B), .Neg_Inf(Neg_Inf_B), .NaN(NaN_B));
+	FP_Class class_A(.Num(A), .Inf(Inf), .Neg_Inf(Neg_Inf), .NaN(NaN), .Normal(), .Sub_Norm());
+	FP_Class class_B(.Num(B), .Inf(Inf_B), .Neg_Inf(Neg_Inf_B), .NaN(NaN_B), .Normal(), .Sub_Norm());
 
-always @(*) begin
+always_comb begin
 	//////////// Assign sign //////////
 	sign_c = (A[15] ^ B[15]);
 	//////////// Edge Cases //////////

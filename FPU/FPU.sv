@@ -17,7 +17,6 @@ Add_Sub Add(
 	);
 	
 Mult Mult(
-	.operator_i(operator_i), 
 	.A(operand_a_i), 
 	.B(operand_b_i), 
 	.C(mult_out)
