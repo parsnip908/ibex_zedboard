@@ -165,7 +165,7 @@ module ibex_simple_system (
     .cfg_device_addr_mask
   );
 
-  if (SecureIbex) begin : g_mem_rdata_ecc
+  if (1'b0) begin : g_mem_rdata_ecc
     logic [31:0] unused_data_rdata;
     logic [31:0] unused_instr_rdata;
 
@@ -183,8 +183,8 @@ module ibex_simple_system (
     assign instr_rdata_intg = '0;
   end
 
-  ibex_top_tracing #(
-      .SecureIbex      ( SecureIbex      ),
+  ibex_top #(
+      .SecureIbex      ( 1'b0      ),
       .ICacheScramble  ( ICacheScramble  ),
       .PMPEnable       ( PMPEnable       ),
       .PMPGranularity  ( PMPGranularity  ),
@@ -193,6 +193,7 @@ module ibex_simple_system (
       .RV32E           ( RV32E           ),
       .RV32M           ( RV32M           ),
       .RV32B           ( RV32B           ),
+      .RV32F           (ibex_pkg::RV32Fbfloat),
       .RegFile         ( RegFile         ),
       .BranchTargetALU ( BranchTargetALU ),
       .ICache          ( ICache          ),
@@ -316,7 +317,7 @@ module ibex_simple_system (
   export "DPI-C" function mhpmcounter_get;
 
   function automatic longint unsigned mhpmcounter_get(int index);
-    return u_top.u_ibex_top.u_ibex_core.cs_registers_i.mhpmcounter[index];
+    return u_top.u_ibex_core.cs_registers_i.mhpmcounter[index];
   endfunction
 
 endmodule
