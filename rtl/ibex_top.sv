@@ -176,7 +176,7 @@ module ibex_top import ibex_pkg::*; #(
   logic [RegFileDataWidth-1:0] fp_rf_rdata_b_ecc, fp_rf_rdata_b_ecc_buf;
 
   logic rf_fp_wdata_sel, rf_fp_rdata_a_sel, rf_fp_rdata_b_sel;
-  logic rf_int_we_wb, fp_rf_we_wb;
+  logic rf_int_we_wb;
   // Combined data and integrity for data and instruction busses
   logic [MemDataWidth-1:0]     data_wdata_core;
   logic [MemDataWidth-1:0]     data_rdata_core;
@@ -497,7 +497,7 @@ module ibex_top import ibex_pkg::*; #(
       // SEC_CM: DATA_REG_SW.GLITCH_DETECT
       .WrenCheck        (RegFileWrenCheck),
       .WordZeroVal      (RegFileDataWidth'(prim_secded_pkg::SecdedInv3932ZeroWord))
-    ) register_file_i (
+    ) register_file_fp (
       .clk_i (clk),
       .rst_ni(rst_ni),
 

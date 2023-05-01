@@ -577,13 +577,47 @@ module ibex_decoder #(
         data_sign_extension_o = 0;
         illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
       end
+
+      /*
+      OPCODE_STORE: begin
+        rf_ren_a_o         = 1'b1;
+        rf_ren_b_o         = 1'b1;
+        data_req_o         = 1'b1;
+        data_we_o          = 1'b1;
+
+        if (instr[14]) begin
+          illegal_insn = 1'b1;
+        end
+
+        // store size
+        unique case (instr[13:12])
+          2'b00:   data_type_o  = 2'b10; // sb
+          2'b01:   data_type_o  = 2'b01; // sh
+          2'b10:   data_type_o  = 2'b00; // sw
+          default: illegal_insn = 1'b1;
+        endcase
+      end
+
+      */
   
       OPCODE_FP_STORE: begin
         rf_ren_a_o         = 1'b1;
         rf_ren_b_o         = 1'b1;
         data_req_o         = 1'b1;
         data_we_o          = 1'b1;
-        illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
+
+        if (instr[14]) begin
+          illegal_insn = 1'b1;
+        end
+
+        // store size
+        unique case (instr[13:12])
+          // 2'b00:   data_type_o  = 2'b10; // sb
+          2'b01:   data_type_o  = 2'b01; // sh
+          2'b10:   data_type_o  = 2'b00; // sw
+          default: illegal_insn = 1'b1;
+        endcase
+        // illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
       end
 
       OPCODE_FP_OP : begin
