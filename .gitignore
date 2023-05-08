@@ -41,6 +41,11 @@ modelsim.ini
 *.bin
 *.dis
 *.elf
+sw/led/led.s
+sw/led/led.vmem
+sw/sim/sim.s
+sw/sim/sim.vmem
+
 
 sim.fst
 

@@ -138,7 +138,7 @@ test-cfg:
 python-lint:
 	$(MAKE) -C util lint
 
-sim: sw-led
+sim:
 	fusesoc --cores-root=. run --target=sim --setup --build lowrisc:ibex:ibex_simple_system --RV32E=0 --RV32M=ibex_pkg::RV32MFast
-	make -C ./sw/led/
-	timeout -s SIGINT 3 ./build/lowrisc_ibex_ibex_simple_system_0/sim-verilator/Vibex_simple_system -t --meminit=ram,./sw/led/led.vmem
+	make -C ./sw/sim/
+	timeout -s SIGINT 3 ./build/lowrisc_ibex_ibex_simple_system_0/sim-verilator/Vibex_simple_system -t --meminit=ram,./sw/sim/sim.vmem
