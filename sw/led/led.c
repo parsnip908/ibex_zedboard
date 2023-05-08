@@ -40,13 +40,13 @@ int main(int argc, char **argv) {
   volatile uint8_t *var = (volatile uint8_t *) 0x0000c010;
   // volatile uint8_t *result = (volatile uint8_t *) 0x0000c020;
   *var = 0x00;
-  // usleep(1000 * 1000); // 1000 ms
+  usleep(1000 * 1000); // 1000 ms
   *var = 0xFF;
-  // usleep(1000 * 1000); // 1000 ms
+  usleep(1000 * 1000); // 1000 ms
   *var = 0x00;
   // usleep(1000 * 1000); // 1000 ms
 
-  uint16_t num = 0xAA;
+  // uint16_t num = 0xAA;
 
   asm volatile(
       "li t1, 16518\n"
@@ -57,38 +57,34 @@ int main(int argc, char **argv) {
       "flh ft1, 0(t3)\n"
       "flh ft2, 4(t3)\n"
       "fadd.h ft3, ft2, ft1\n"
-  );
-  *var = 0xFF;
-  // usleep(1000 * 1000); // 1000 ms
-  *var = 0x00;
-  // usleep(1000 * 1000); // 1000 ms
-
-  asm volatile(
       "fsh ft3, 8(t3)\n"
+      // "li a5, 49152\n"
+      // "addi a5, a5, 16\n"
+      "fsh ft3, 0(a5)\n"
   );
 
+  usleep(1000 * 1000); // 1000 ms
   *var = 0xFF;
-  // usleep(1000 * 1000); // 1000 ms
+  usleep(1000 * 1000); // 1000 ms
   *var = 0x00;
-  // usleep(1000 * 1000); // 1000 ms
 
 
-  num = *((volatile uint16_t *)(0x0000c020 + 8));
+  uint16_t* num_p = (uint16_t *)(0xC028);
+  uint16_t num = *num_p;
 
   //0xA00A;//
 
-  // while (1) {
+  while (1) {
 
     usleep(1000 * 1000); // 1000 ms
-    *var = num % 0x10;
+    *var = num & 0xFF;
 
-    // usleep(1000 * 1000); // 1000 ms
+    usleep(1000 * 1000); // 1000 ms
     *var = num >> 8;
 
-    // usleep(1000 * 1000); // 1000 ms
-    *var = 0x00;
-    // usleep(1000 * 1000); // 1000 ms
-    *var = 0xFF;
-
-  // }
+    usleep(1000 * 1000); // 1000 ms
+    *var = 0xAA;
+    usleep(1000 * 1000); // 1000 ms
+    *var = 0x55;
+  }
 }

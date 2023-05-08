@@ -262,6 +262,12 @@ module ibex_top import ibex_pkg::*; #(
   assign fp_rf_we_wb  = rf_we_wb & (rf_fp_wdata_sel);
   assign rf_rdata_a   = rf_fp_rdata_a_sel ? fp_rf_rdata_a_ecc_buf : rf_rdata_a_ecc_buf;
   assign rf_rdata_b   = rf_fp_rdata_b_sel ? fp_rf_rdata_b_ecc_buf : rf_rdata_b_ecc_buf;
+  assign fp_rf_waddr_wb = rf_waddr_wb;
+  assign fp_rf_wdata_wb_ecc = rf_wdata_wb_ecc;
+  assign fp_rf_raddr_a = rf_raddr_a;
+  assign fp_rf_raddr_b = rf_raddr_b;
+
+
 
   // ibex_core takes integrity and data bits together. Combine the separate integrity and data
   // inputs here.

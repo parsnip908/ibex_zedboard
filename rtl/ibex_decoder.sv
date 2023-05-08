@@ -621,6 +621,9 @@ module ibex_decoder #(
       end
 
       OPCODE_FP_OP : begin
+        rf_ren_a_o  = 1'b1;
+        rf_ren_b_o  = 1'b1;
+        rf_we       = 1'b1;
         unique case (instr[31:25])
           7'b000_0010, 
           7'b000_0110,
@@ -754,6 +757,7 @@ module ibex_decoder #(
     rf_fp_wdata_sel_o   = 1'b0;
     rf_fp_rdata_a_sel_o = 1'b0;
     rf_fp_rdata_b_sel_o = 1'b0;
+    fp_alu_operator_o   = FP_ALU_ADD;
 
     opcode_alu          = opcode_e'(instr_alu[6:0]);
 
@@ -1249,7 +1253,7 @@ module ibex_decoder #(
         rf_fp_wdata_sel_o   = 1'b1;
         rf_fp_rdata_a_sel_o = 1'b0;
         alu_op_a_mux_sel_o  = OP_A_REG_A;
-        alu_operator_o     = ALU_ADD;
+        alu_operator_o      = ALU_ADD;
         alu_op_b_mux_sel_o  = OP_B_IMM;
         imm_b_mux_sel_o     = IMM_B_I;
 
