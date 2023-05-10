@@ -6,7 +6,7 @@ module Add_Sub (
 );
 import ibex_pkg::*;
 
-logic add_sub;
+logic add_sub, add_sub_tmp;
 logic [15:0] a, C_norm;
 logic [14:0] b;
 logic [7:0] shift, shift_c;
@@ -26,7 +26,7 @@ wire Sub_Norm, Sub_Norm_B;
 
 always_comb begin
 	//////////// Add or Sub //////////	
-	add_sub = (operator_i == FP_ALU_ADD)? 1:0;
+	add_sub_tmp = (operator_i == FP_ALU_ADD || operator_i == FP_ALU_FMADD)? 1:0;
 	//////////// Assign bigger number to a //////////
 	{a, b, sign_flip} = (A[14:0] >= B[14:0])? {A, B[14:0], 1'b 0}: {B, A[14:0],  1'b 1};
 	exp_a = a[14:7];
@@ -36,7 +36,7 @@ always_comb begin
 	shift = (a[14:7] == b[14:7])? 0: (a[14:7] - b[14:7]);
 	sig_b = sig_b >> shift;
 	//////////// Reassign operation based on sign //////////
-	case ({add_sub, A[15], B[15]}) 
+	case ({add_sub_tmp, A[15], B[15]}) 
 		3'b 000:    begin
 					add_sub = 0;
 					sign = sign_flip;
@@ -91,29 +91,33 @@ always_comb begin
 	else begin 
 		if (b[14:0] == 15'b 000000000000000)
 			C_norm = {sign, a[14:0]};
+		else if (a[14:0] == b[14:0])
+			C_norm = 16'b 0000_0000_0000_0000;
 		else begin
 			sig_c = sig_a - sig_b;
-		if (sig_c[23] == 1'b 1) shift_sub = 0;
-		else if (sig_c[22:16] == 7'b 0000000) shift_sub = 7;
-		else if (sig_c[22:16] == 7'b 0000001) shift_sub = 6;
-		else if (sig_c[22:17] == 6'b 000001) shift_sub = 5;
-		else if (sig_c[22:18] == 5'b 00001) shift_sub = 4;
-		else if (sig_c[22:19] == 4'b 0001) shift_sub = 3;
-		else if (sig_c[22:20] == 3'b 001) shift_sub = 2;
-		else if (sig_c[22:21] == 2'b 01) shift_sub = 1;
-		else if (sig_c[22] == 1'b 1) shift_sub = 0;
-		else shift_sub = 0;
-			/*case (sig_c[7:1])
-				7'b 0000000 : shift_sub = 7;
-				7'b 0000001 : shift_sub = 6;
-				7'b 000001x : shift_sub = 5;
-				7'b 00001xx : shift_sub = 4;
-				7'b 0001xxx : shift_sub = 3;
-				7'b 001xxxx : shift_sub = 2;
-				7'b 01xxxxx : shift_sub = 1;
-				7'b 1xxxxxx : shift_sub = 0;
-				default : shift_sub = 0; 
-			endcase*/
+			casez (sig_c[23:16])
+				8'b 0000_0000 : shift_sub = 7;
+				8'b 0000_0001 : shift_sub = 6;
+				8'b 0000_001? : shift_sub = 5;
+				8'b 0000_01?? : shift_sub = 4;
+				8'b 0000_1??? : shift_sub = 3;
+				8'b 0001_???? : shift_sub = 2;
+				8'b 001?_???? : shift_sub = 1;
+				8'b 01??_???? : shift_sub = 0;
+				8'b 1???_???? : shift_sub = 0;
+				default: shift_sub = 0;
+			endcase
+			/*if (sig_c[23] == 1'b 1) shift_sub = 0;
+			else if (sig_c[22:16] == 7'b 0000000) shift_sub = 7;
+			else if (sig_c[22:16] == 7'b 0000001) shift_sub = 6;
+			else if (sig_c[22:17] == 6'b 000001) shift_sub = 5;
+			else if (sig_c[22:18] == 5'b 00001) shift_sub = 4;
+			else if (sig_c[22:19] == 4'b 0001) shift_sub = 3;
+			else if (sig_c[22:20] == 3'b 001) shift_sub = 2;
+			else if (sig_c[22:21] == 2'b 01) shift_sub = 1;
+			else if (sig_c[22] == 1'b 1) shift_sub = 0;
+			else shift_sub = 0;
+			*/
 			shift_sub = (sig_c[23] == 0)? shift_sub + 1: shift_sub;
 			sig_c = sig_c << shift_sub;
 			case (sig_c[15:0])
