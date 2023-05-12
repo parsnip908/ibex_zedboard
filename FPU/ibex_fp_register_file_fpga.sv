@@ -43,13 +43,13 @@ module  ibex_fp_register_file_fpga #(
   logic we; // write enable if writing to any register other than R0
 
   // async_read a
-  assign fp_rdata_a_o = (fp_raddr_a_i == '0) ? '0 : fp_mem[fp_raddr_a_i];
+  assign fp_rdata_a_o = fp_mem[fp_raddr_a_i];
 
   // async_read b
-  assign fp_rdata_b_o = (fp_raddr_b_i == '0) ? '0 : fp_mem[fp_raddr_b_i];
+  assign fp_rdata_b_o = fp_mem[fp_raddr_b_i];
 
   // we select
-  assign we = (fp_waddr_a_i == '0) ? 1'b0 : fp_we_a_i;
+  assign we = fp_we_a_i;
 
   // SEC_CM: DATA_REG_SW.GLITCH_DETECT
   // This checks for spurious WE strobes on the regfile.

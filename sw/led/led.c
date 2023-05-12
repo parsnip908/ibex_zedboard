@@ -58,9 +58,9 @@ int main(int argc, char **argv) {
       "flh ft2, 4(t3)\n"
       "fadd.h ft3, ft2, ft1\n"
       "fsh ft3, 8(t3)\n"
-      // "li a5, 49152\n"
+      "li t5, 49168\n"
       // "addi a5, a5, 16\n"
-      "fsh ft3, 0(a5)\n"
+      "fsh ft3, 0(t5)\n"
   );
 
   usleep(1000 * 1000); // 1000 ms
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
   *var = 0x00;
 
 
-  uint16_t* num_p = (uint16_t *)(0xC028);
+  uint16_t* num_p = (uint16_t *)(0x0000c028);
   uint16_t num = *num_p;
 
   //0xA00A;//

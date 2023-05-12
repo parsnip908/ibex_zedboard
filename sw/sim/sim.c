@@ -34,6 +34,9 @@ static int usleep(unsigned long usec) {
   return usleep_ibex(usec);
 }
 
+#include "Matrix_A.c"
+#include "Matrix_B.c"
+#include "Matrix_C.c"
 
 int main(int argc, char **argv) {
   // The lowest four bits of the highest byte written to the memory region named
@@ -52,39 +55,53 @@ int main(int argc, char **argv) {
     "nop\n"
   );
 
-  uint16_t data[4] = {0x4167,0xc169,0x3f10,0x4008};
+  // uint16_t data[4] = {0x4167,0xc169,0x3f10,0x4008};
 
-  volatile uint16_t *A = (volatile uint16_t *) 0x0000c020;
-  volatile uint16_t *B = (volatile uint16_t *) 0x0000c030;
-  volatile uint16_t *C = (volatile uint16_t *) 0x0000c040;
+  // volatile uint16_t *A = (volatile uint16_t *) 0x0000c020;
+  // volatile uint16_t *B = (volatile uint16_t *) 0x0000c030;
+  // volatile uint16_t *C = (volatile uint16_t *) 0x0000c040;
 
-  for(int i = 0; i<4; i++)
-  {
-    A[i] = data[i];
-    B[i] = data[i];
-    C[i] = 0;
-  }
+  // for(int i = 0; i<4; i++)
+  // {
+  //   A[i] = data[i];
+  //   B[i] = data[i];
+  //   C[i] = 0;
+  // }
+
+  volatile uint16_t **Matricies = (volatile uint16_t **) 0x0000c020;
+  Matricies[0] = matrixA;
+  Matricies[1] = matrixB;
+  Matricies[2] = matrixC;
+
 
   asm volatile(
-    "  li t0, 4\n"
+    "  li t0, 16\n"
     "  li t1, 0\n"
     "  li t2, 0\n"
     "  li t3, 0\n"
     "  li t5, 0xc020\n"
-    "  li t6, 0xc030\n"
-    "  li a7, 0xc040\n"
+    "  lw t6, 4(t5)\n"
+    "  lw a7, 8(t5)\n"
+    "  lw t5, 0(t5)\n"
+    // "  li t6, 0xc030\n"
+    // "  li a7, 0xc040\n"
     "fori:\n"
     "  li t2, 0\n"
     "forj:\n"
     "  li t3, 0\n"
-    "fork:\n"
-    "  slli t4, t1, 1\n"
-    "  add t4, t4, t3\n"
-    "  add t4, a0, t4\n"
-    "  flh ft1, 0(t4)\n"
-    "  slli t4, t3, 1\n"
+    "  slli t4, t1, 3\n"
     "  add t4, t4, t2\n"
-    "  add t4, a1, t4\n"
+    "  add t4, a7, t4\n"
+    "  flh ft3, 0(t4)\n"
+    // "  fsub.h ft0, ft0, ft0\n"
+    "fork:\n"
+    "  slli t4, t1, 3\n"
+    "  add t4, t4, t3\n"
+    "  add t4, t5, t4\n"
+    "  flh ft1, 0(t4)\n"
+    "  slli t4, t3, 3\n"
+    "  add t4, t4, t2\n"
+    "  add t4, t6, t4\n"
     "  flh ft2, 0(t4)\n"
     "  fmul.h ft1, ft1, ft2\n"
     "  fadd.h ft0, ft0, ft1\n"
@@ -94,8 +111,9 @@ int main(int argc, char **argv) {
 
     "  slli t4, t1, 1\n"
     "  add t4, t4, t2\n"
-    "  add t4, a2, t4\n"
+    "  add t4, a7, t4\n"
     "  fsh ft0, 0(t4)\n"
+    "  fsub.h ft0, ft0, ft3\n"
 
     "  addi t2, t2, 2\n"
     "  bne t2, t0, forj\n"
