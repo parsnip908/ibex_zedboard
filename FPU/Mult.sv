@@ -9,7 +9,7 @@ import ibex_pkg::*;
 logic sign_c; 
 logic [7:0] exp_a, exp_b, exp_c, exp_norm;
 logic [7:0] sig_a, sig_b;
-logic [15:0] sig_c;
+logic [15:0] sig_c, sig_c_mul;
 logic [6:0] sig_cc;
 logic [15:0] C_norm;
 
@@ -27,16 +27,15 @@ always_comb begin : normal_mult
 	sig_a = {1'b 1, A[6:0]};
 	exp_b = B[14:7];
 	sig_b =  {1'b 1, B[6:0]};
-	sig_c = sig_a * sig_b;
-	exp_norm = (sig_c[15])? 126: 127;
-	exp_c = exp_a  + exp_b - exp_norm;
-	sig_c = sig_c >> sig_c[15];
-	if (sig_c[6] == 1'b 0) 
-		sig_cc = sig_c[13:7];
-	else if (sig_c[6:0] == 7'b 1000000)
-		sig_cc = (sig_c[7] == 1'b 0)? sig_c[13:7]: sig_c[13:7] + 1;
-	else
-		sig_cc = sig_c[13:7] + 1; 
+	sig_c_mul = sig_a * sig_b;
+	exp_norm = (sig_c_mul[15])? 126: 127;
+	exp_c = exp_a + exp_b - exp_norm;
+	sig_c = sig_c_mul[15]? sig_c_mul >> 16'd 1: sig_c_mul;
+	casez (sig_c[8:0])
+		9'b ?0???_???? : sig_cc = sig_c[13:7];
+		9'b 01000_0000 : sig_cc = sig_c[13:7];
+		default: sig_cc = sig_c[13:7] + 1;
+	endcase
 	C_norm = {sign_c, exp_c, sig_cc};
 end
 
