@@ -7,12 +7,14 @@ module FPU (
 
 import ibex_pkg::*;
 
-wire [15:0] add_sub_out, mult_out;
+wire [15:0] add_sub_out, mult_out, operand_b;
+
+assign operand_b = (operator_i == FP_ALU_SUB)? {~operand_b_i[15], operand_b_i[14:0]} : operand_b_i;
+
 
 Add_Sub Add(
-	.operator_i(operator_i), 
 	.A(operand_a_i), 
-	.B(operand_b_i), 
+	.B(operand_b), 
 	.C(add_sub_out)
 	);
 	
