@@ -10,11 +10,12 @@ module Add_Sub (
 logic add_sub;
 logic [15:0] a, C_norm;
 logic [14:0] b;
-logic [7:0] shift, shift_c;
+logic [7:0] shift;
 logic [3:0] shift_sub;
 logic sign, sign_flip; 
 logic [7:0] exp_a, exp_c;
-logic [16:0] sig_a, sig_b, sig_c, sig_b_tmp, sig_sum, sig_sub;
+logic [16:0] sig_a, sig_b, sig_b_tmp, sig_sum, sig_sub;
+logic [14:0] sig_c;
 logic [6:0] sig_cc;
 
 wire Inf, Inf_B;
@@ -39,7 +40,8 @@ always_comb begin
 end
 
 always_comb begin
-
+	sig_sum = sig_a + sig_b;
+	sig_sub = sig_a - sig_b;
 	//////////// Calculate result sign //////////
 	case ({A[15], B[15]}) 
 		2'b 00: sign = 0;
@@ -48,13 +50,11 @@ always_comb begin
 		2'b 11: sign = 1;
 	endcase
 	//////////// Add //////////
-	sig_sum = sig_a + sig_b;
 	if (add_sub == 1) begin 
-		sig_c = sig_sum >> (sig_sum[16]);
-		exp_c = exp_a + sig_sum[16];	
+		sig_c = sig_sum[16] ? sig_sum[15:1] : sig_sum[14:0];
+		exp_c = exp_a + {7'd0, sig_sum[16]};	
 	end 
 	//////////// Sub //////////
-	sig_sub = sig_a - sig_b;
 	else begin 
 		casez (sig_sub[15:8])
 			8'b 0000_0000 : shift_sub = 8;
@@ -68,7 +68,9 @@ always_comb begin
 			8'b 1???_???? : shift_sub = 0;
 			//default: shift_sub = 0;
 		endcase
+		/* verilator lint_off WIDTHTRUNC */
 		sig_c = sig_sub << shift_sub;
+		/* verilator lint_on WIDTHTRUNC */
 		exp_c = exp_a - {4'b 0000, shift_sub};
 	end
 	//////////// Rounding //////////
