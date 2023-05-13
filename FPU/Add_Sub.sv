@@ -14,7 +14,8 @@ logic [7:0] shift;
 logic [3:0] shift_sub;
 logic sign, sign_flip; 
 logic [7:0] exp_a, exp_c;
-logic [16:0] sig_a, sig_b, sig_b_tmp, sig_sum, sig_sub;
+logic [16:0] sig_a, sig_b, sig_b_tmp, sig_sum;
+logic [15:0] sig_sub;
 logic [14:0] sig_c;
 logic [6:0] sig_cc;
 
@@ -41,7 +42,7 @@ end
 
 always_comb begin
 	sig_sum = sig_a + sig_b;
-	sig_sub = sig_a - sig_b;
+	sig_sub = sig_a[15:0] - sig_b[15:0];
 	//////////// Calculate result sign //////////
 	case ({A[15], B[15]}) 
 		2'b 00: sign = 0;
@@ -52,7 +53,7 @@ always_comb begin
 	//////////// Add //////////
 	if (add_sub == 1) begin 
 		sig_c = sig_sum[16] ? sig_sum[15:1] : sig_sum[14:0];
-		exp_c = exp_a + {7'd0, sig_sum[16]};	
+		exp_c = sig_sum[16] ? exp_a + 7'd1  : exp_a;
 	end 
 	//////////// Sub //////////
 	else begin 

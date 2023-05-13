@@ -114,6 +114,7 @@ int main(int argc, char **argv) {
     "  add t4, a7, t4\n"
     "  fsh ft0, 0(t4)\n"
     "  fsub.h ft0, ft0, ft3\n"
+    "  fadd.h ft4, ft0, ft4\n"
 
     "  addi t2, t2, 2\n"
     "  bne t2, t0, forj\n"

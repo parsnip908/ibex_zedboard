@@ -149,3 +149,5 @@ run-sim:
 	timeout -s SIGINT 3 ./build/lowrisc_ibex_ibex_simple_system_0/sim-verilator/Vibex_simple_system -t --meminit=ram,./sw/sim/sim.vmem
 
 sim: build-sim run-sim
+
+both: sim build-zedboard
