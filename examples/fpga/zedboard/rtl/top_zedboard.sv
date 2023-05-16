@@ -130,11 +130,15 @@ module top_zedboard (
   assign LED = leds;
 
   // Clock and reset
+
+  // always @(posedge clk_buf)
+  //   clk_sys <= ~clk_sys;
+
   clkgen_xil7series
     clkgen(
       .IO_CLK,
       .IO_RST_N,
-      .clk_sys,
+      .clk_sys, //(clk_buf)
       .rst_sys_n
     );
 

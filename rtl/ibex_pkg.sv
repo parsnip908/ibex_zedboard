@@ -206,7 +206,8 @@ package ibex_pkg;
     // Arithmetics
     FP_ALU_ADD,
     FP_ALU_SUB,
-    FP_ALU_MUL
+    FP_ALU_MUL,
+    FP_ALU_MADD
   } fp_alu_op_e;
 
   

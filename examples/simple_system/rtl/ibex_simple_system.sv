@@ -165,7 +165,7 @@ module ibex_simple_system (
     .cfg_device_addr_mask
   );
 
-  if (1'b0) begin : g_mem_rdata_ecc
+  if (SecureIbex) begin : g_mem_rdata_ecc
     logic [31:0] unused_data_rdata;
     logic [31:0] unused_instr_rdata;
 
@@ -184,7 +184,7 @@ module ibex_simple_system (
   end
 
   ibex_top #(
-      .SecureIbex      ( 1'b0      ),
+      .SecureIbex      ( SecureIbex      ),
       .ICacheScramble  ( ICacheScramble  ),
       .PMPEnable       ( PMPEnable       ),
       .PMPGranularity  ( PMPGranularity  ),

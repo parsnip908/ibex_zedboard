@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   *var = 0xFF;
   usleep(1000 * 1000); // 1000 ms
   *var = 0x00;
-  // usleep(1000 * 1000); // 1000 ms
+  usleep(1000 * 1000); // 1000 ms
 
   // uint16_t num = 0xAA;
 
@@ -77,10 +77,10 @@ int main(int argc, char **argv) {
   while (1) {
 
     usleep(1000 * 1000); // 1000 ms
-    *var = num & 0xFF;
+    *var = num >> 8;
 
     usleep(1000 * 1000); // 1000 ms
-    *var = num >> 8;
+    *var = num & 0xFF;
 
     usleep(1000 * 1000); // 1000 ms
     *var = 0xAA;
