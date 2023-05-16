@@ -496,14 +496,14 @@ module ibex_top import ibex_pkg::*; #(
   ////////////////////////////////////
 
   logic fp_rf_alert_major_internal;
-  if (RegFile == RegFileFF && RV32F == RV32Fbfloat) begin : gen_regfile_fp
+  if (RegFile == RegFileFPGA && RV32F == RV32Fbfloat) begin : gen_regfile_bfloat
     ibex_fp_register_file_fpga #(
       .DataWidth        (RegFileDataWidth),
       .DummyInstructions(DummyInstructions),
       // SEC_CM: DATA_REG_SW.GLITCH_DETECT
       .WrenCheck        (RegFileWrenCheck),
       .WordZeroVal      (RegFileDataWidth'(prim_secded_pkg::SecdedInv3932ZeroWord))
-    ) register_file_fp (
+    ) register_file_bfloat (
       .clk_i (clk),
       .rst_ni(rst_ni),
 
