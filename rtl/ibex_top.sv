@@ -167,11 +167,11 @@ module ibex_top import ibex_pkg::*; #(
   logic [RegFileDataWidth-1:0] rf_rdata_a, rf_rdata_b;
 
   // Core <-> FP Register file signals
-  logic [4:0]                  fp_rf_raddr_a;
-  logic [4:0]                  fp_rf_raddr_b;
-  logic [4:0]                  fp_rf_waddr_wb;
+  // logic [4:0]                  fp_rf_raddr_a;
+  // logic [4:0]                  fp_rf_raddr_b;
+  // logic [4:0]                  fp_rf_waddr_wb;
   logic                        fp_rf_we_wb;
-  logic [RegFileDataWidth-1:0] fp_rf_wdata_wb_ecc;
+  // logic [RegFileDataWidth-1:0] fp_rf_wdata_wb_ecc;
   logic [RegFileDataWidth-1:0] fp_rf_rdata_a_ecc, fp_rf_rdata_a_ecc_buf;
   logic [RegFileDataWidth-1:0] fp_rf_rdata_b_ecc, fp_rf_rdata_b_ecc_buf;
 
@@ -262,10 +262,10 @@ module ibex_top import ibex_pkg::*; #(
   assign fp_rf_we_wb  = rf_we_wb & (rf_fp_wdata_sel);
   assign rf_rdata_a   = rf_fp_rdata_a_sel ? fp_rf_rdata_a_ecc_buf : rf_rdata_a_ecc_buf;
   assign rf_rdata_b   = rf_fp_rdata_b_sel ? fp_rf_rdata_b_ecc_buf : rf_rdata_b_ecc_buf;
-  assign fp_rf_waddr_wb = rf_waddr_wb;
-  assign fp_rf_wdata_wb_ecc = rf_wdata_wb_ecc;
-  assign fp_rf_raddr_a = rf_raddr_a;
-  assign fp_rf_raddr_b = rf_raddr_b;
+  // assign fp_rf_waddr_wb = rf_waddr_wb;
+  // assign fp_rf_wdata_wb_ecc = rf_wdata_wb_ecc;
+  // assign fp_rf_raddr_a = rf_raddr_a;
+  // assign fp_rf_raddr_b = rf_raddr_b;
 
 
 
@@ -507,12 +507,12 @@ module ibex_top import ibex_pkg::*; #(
       .clk_i (clk),
       .rst_ni(rst_ni),
 
-      .fp_raddr_a_i(fp_rf_raddr_a),
+      .fp_raddr_a_i(rf_raddr_a),
       .fp_rdata_a_o(fp_rf_rdata_a_ecc),
-      .fp_raddr_b_i(fp_rf_raddr_b),
+      .fp_raddr_b_i(rf_raddr_b),
       .fp_rdata_b_o(fp_rf_rdata_b_ecc),
-      .fp_waddr_a_i(fp_rf_waddr_wb),
-      .fp_wdata_a_i(fp_rf_wdata_wb_ecc),
+      .fp_waddr_a_i(rf_waddr_wb),
+      .fp_wdata_a_i(rf_wdata_wb_ecc),
       .fp_we_a_i   (fp_rf_we_wb),
       .err_o    (fp_rf_alert_major_internal)
     );

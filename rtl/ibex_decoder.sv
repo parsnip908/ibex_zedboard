@@ -575,7 +575,8 @@ module ibex_decoder #(
         data_req_o          = 1'b1;
         data_type_o         = 2'b01;
         data_sign_extension_o = 0;
-        illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
+        if(instr[13:12] != 2'b01)
+          illegal_insn = 1'b1;
       end
 
       /*
@@ -627,7 +628,7 @@ module ibex_decoder #(
         unique case (instr[31:25])
           7'b000_0010, 
           7'b000_0110,
-          7'b000_1010: illegal_insn = 1'b0; 
+          7'b000_1010: ; 
           default: illegal_insn = 1'b1; 
         endcase
       end
@@ -1243,7 +1244,7 @@ module ibex_decoder #(
         rf_fp_rdata_b_sel_o = 1'b1;
         alu_op_a_mux_sel_o  = OP_A_REG_A;
         //alu_op_b_mux_sel_o  = OP_B_REG_B;
-        alu_operator_o     = ALU_ADD;
+        alu_operator_o      = ALU_ADD;
         // offset from immediate
         imm_b_mux_sel_o     = IMM_B_S;
         alu_op_b_mux_sel_o  = OP_B_IMM;

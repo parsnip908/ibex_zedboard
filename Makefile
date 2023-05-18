@@ -140,9 +140,9 @@ python-lint:
 
 build-sim:
 	fusesoc --cores-root=. run --target=sim --setup --build \
-		lowrisc:ibex:ibex_simple_system --RV32E=0 --RV32M=ibex_pkg::RV32MFast \
+		lowrisc:ibex:ibex_simple_system --RV32E=0 \
+		--RV32M=ibex_pkg::RV32MFast --RegFile=ibex_pkg::RegFileFPGA \
 		&& echo -ne '\007' || { echo -ne '\007'; exit 1; }
-# 	echo -ne '\007'
 
 run-sim:
 	make -C ./sw/sim/

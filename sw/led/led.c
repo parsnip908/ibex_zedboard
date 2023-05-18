@@ -40,51 +40,54 @@ int main(int argc, char **argv) {
   volatile uint8_t *var = (volatile uint8_t *) 0x0000c010;
   // volatile uint8_t *result = (volatile uint8_t *) 0x0000c020;
   *var = 0x00;
-  usleep(1000 * 1000); // 1000 ms
+  // usleep(1000 * 1000); // 1000 ms
   *var = 0xFF;
-  usleep(1000 * 1000); // 1000 ms
+  // usleep(1000 * 1000); // 1000 ms
   *var = 0x00;
-  usleep(1000 * 1000); // 1000 ms
+  // usleep(1000 * 1000); // 1000 ms
 
   // uint16_t num = 0xAA;
+  while (1) {
 
   asm volatile(
       "li t1, 16518\n"
       "li t2, 16605\n"
       "li t3, 49184\n"
       "sh t1, 0(t3)\n"
-      "sh t2, 4(t3)\n"
+      "sh t2, 2(t3)\n"
       "flh ft1, 0(t3)\n"
-      "flh ft2, 4(t3)\n"
+      "flh ft2, 2(t3)\n"
       "fadd.h ft3, ft2, ft1\n"
-      "fsh ft3, 8(t3)\n"
-      "li t5, 49168\n"
+      "fmul.h ft4, ft2, ft1\n"
+      "fsh ft3, 4(t3)\n"
+      "fsh ft4, 6(t3)\n"
+      // "li t5, 49168\n"
       // "addi a5, a5, 16\n"
-      "fsh ft3, 0(t5)\n"
+      // "fsh ft3, 0(t5)\n"
   );
 
   usleep(1000 * 1000); // 1000 ms
-  *var = 0xFF;
-  usleep(1000 * 1000); // 1000 ms
+  // *var = 0xFF;
+  // usleep(1000 * 1000); // 1000 ms
   *var = 0x00;
 
-
-  uint16_t* num_p = (uint16_t *)(0x0000c028);
-  uint16_t num = *num_p;
-
-  //0xA00A;//
-
-  while (1) {
+  uint16_t num_add = *(uint16_t *)(0x0000c024);
+  uint16_t num_mul = *(uint16_t *)(0x0000c026);
 
     usleep(1000 * 1000); // 1000 ms
-    *var = num >> 8;
+    *var = num_add >> 8;
+    usleep(1000 * 1000); // 1000 ms
+    *var = num_add & 0xFF;
 
     usleep(1000 * 1000); // 1000 ms
-    *var = num & 0xFF;
+    *var = 0x00;
 
     usleep(1000 * 1000); // 1000 ms
-    *var = 0xAA;
+    *var = num_mul >> 8;
     usleep(1000 * 1000); // 1000 ms
-    *var = 0x55;
+    *var = num_mul & 0xFF;
+
+    usleep(1000 * 1000); // 1000 ms
+    *var = 0x00;
   }
 }
