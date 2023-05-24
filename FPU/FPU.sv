@@ -38,15 +38,15 @@ Add_Sub Add(
 	
 Mult Mult(
 	.rs1(operand_a), 
-	.rs2(operand_b_i), 
+	.rs2(operand_b), 
 	.rd(mult_o),
 	.Classif_op_a(Classif_a),
 	.Classif_op_b(Classif_b)
 	);
 
 int_to_fp cvt_S_W(
-	.int_i(operand_a),
-	.mode_i(mode_i),
+	.int_i(operand_a_i),
+	.mode_i(mode_i[0]),
 	.fp_o(fp_o)
 );
 

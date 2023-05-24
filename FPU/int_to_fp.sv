@@ -1,6 +1,6 @@
 module int_to_fp (
     input  logic [31:0] int_i,
-    input  logic [1:0] mode_i,
+    input  logic mode_i,
     output logic [15:0] fp_o
 );
 
@@ -12,18 +12,18 @@ logic [30:0] int_mag;
 logic [15:0] fp_out_norm;
 logic [7:0] fp_exp;
 logic [6:0] fp_sig;
-logic [5:0] pos;
-integer i;
+logic [4:0] pos;
+logic [4:0] i;
 
 always_comb begin    
     
-    int_sign = int_i[31];
+    int_sign = (mode_i)? 1'b 0: int_i[31];
     int_i_tmp = int_sign? ~int_i + 1 : int_i; // For 2's complement
     for(i = 0; i <=31; i++) begin
         if(int_i_tmp[i] == 1)
             pos = i;
     end
-    fp_exp = pos + 127;
+    fp_exp = {2'b 00, pos} + 8'd 127;
     int_mag = int_i_tmp[30:0] << (31-pos);
 
     casez (int_mag[23:0])
