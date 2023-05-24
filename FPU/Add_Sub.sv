@@ -1,41 +1,39 @@
 module Add_Sub (
-  	input  logic [15:0]       A,
-  	input  logic [15:0]       B,
-	output logic [15:0]       C
+	input  logic [15:0]       rs1,
+	input  logic [15:0]       rs2,
+	input ibex_pkg::Classif_e Classif_op_a,
+	input ibex_pkg::Classif_e Classif_op_b,
+	output logic [15:0]       rd
 );
 
-// initial begin
-// 	A = 16'b 0111111100000000;
-// end
-logic add_sub;
-logic [15:0] a, C_norm;
+import ibex_pkg::*;
+
+logic 		 add_sub;
+logic 		 sign;
+logic 		 sign_flip;
+
+logic [3:0]  shift_sub;
+logic [7:0]  shift;
+
+logic [15:0] a;
+logic [15:0] C_norm;
 logic [14:0] b;
-logic [7:0] shift;
-logic [3:0] shift_sub;
-logic sign, sign_flip; 
-logic [7:0] exp_a, exp_c;
+
 logic [16:0] sig_a, sig_b, sig_b_tmp, sig_sum;
 logic [15:0] sig_sub;
 logic [14:0] sig_c;
-logic [6:0] sig_cc;
+logic [7:0]  exp_a, exp_c;
+logic [6:0]  sig_cc;
 
-wire Inf, Inf_B;
-wire Neg_Inf, Neg_Inf_B;
-wire NaN, NaN_B;
-wire Sub_Norm, Sub_Norm_B;
-
-	FP_Class class_A(.Num(A), .Inf(Inf), .Neg_Inf(Neg_Inf), .NaN(NaN), .Normal(), .Sub_Norm(Sub_Norm));
-	FP_Class class_B(.Num(B), .Inf(Inf_B), .Neg_Inf(Neg_Inf_B), .NaN(NaN_B), .Normal(), .Sub_Norm(Sub_Norm_B));
-
-assign add_sub = (A[15] == B[15]);
+assign add_sub = (rs1[15] == rs2[15]);
 
 always_comb begin
 	//////////// Assign bigger number to a //////////
-	{a, b, sign_flip} = (A[14:0] >= B[14:0])? {A, B[14:0], 1'b 0}: {B, A[14:0],  1'b 1};
+	{a, b, sign_flip} = (rs1[14:0] >= rs2[14:0])? {rs1, rs2[14:0], 1'b 0}: {rs2, rs1[14:0],  1'b 1};
 	exp_a = a[14:7];
-	sig_a = (Sub_Norm)? {2'b 00, a[6:0], 8'h 00}:{2'b 01, a[6:0], 8'h 00};
+	sig_a = (Classif_op_a == Sub_Norm)? {2'b 00, a[6:0], 8'h 00}:{2'b 01, a[6:0], 8'h 00};
 
-	sig_b_tmp = (Sub_Norm_B)? {2'b 00, b[6:0], 8'h 00}:{2'b 01, b[6:0], 8'h 00};
+	sig_b_tmp = (Classif_op_b == Sub_Norm)? {2'b 00, b[6:0], 8'h 00}:{2'b 01, b[6:0], 8'h 00};
 	shift = (a[14:7] == b[14:7])? 0: (a[14:7] - b[14:7]);
 	sig_b = (shift > 8)? 17'd 0: sig_b_tmp >> shift[3:0];
 end
@@ -44,7 +42,7 @@ always_comb begin
 	sig_sum = sig_a + sig_b;
 	sig_sub = sig_a[15:0] - sig_b[15:0];
 	//////////// Calculate result sign //////////
-	case ({A[15], B[15]}) 
+	case ({rs1[15], rs2[15]}) 
 		2'b 00: sign = 0;
 		2'b 01: sign = sign_flip;
 		2'b 10: sign = !sign_flip;
@@ -91,13 +89,13 @@ end
 
 always_comb begin
 	//////////// Edge Cases //////////	
-	if (NaN || NaN_B || (Neg_Inf & Inf_B) || (Inf & Neg_Inf_B)) 
-		C = 16'b 0111111111000000;
-	else if(Inf || Inf_B)
-			C = 16'b 0111_1111_1000_0000;
-	else if(Neg_Inf || Neg_Inf_B)
-			C = 16'b 1111_1111_1000_0000;
+	if ((Classif_op_a == NaN || Classif_op_b == NaN) || (Classif_op_a == Neg_Inf && Classif_op_b == Inf) || (Classif_op_a == Inf && Classif_op_b == Neg_Inf)) 
+		rd = 16'b 0111111111000000;
+	else if(Classif_op_a == Inf || Classif_op_b == Inf)
+			rd = 16'b 0111_1111_1000_0000;
+	else if(Classif_op_a == Neg_Inf || Classif_op_a == Neg_Inf)
+			rd = 16'b 1111_1111_1000_0000;
 	else 
-		C = C_norm;
+		rd = C_norm;
 end
 endmodule

@@ -1,16 +1,18 @@
 module FP_Class(
-	input [15:0] Num,
-	output Inf,
-	output Neg_Inf,
-	output NaN,
-	output Sub_Norm,
-	output Normal
-	);
+	input	logic [15:0] Num,
+	output ibex_pkg::Classif_e Classif
+);
 
-	assign Inf = (Num == 16'b0111_1111_1000_0000);
-	assign Neg_Inf = (Num == 16'b1111_1111_1000_0000);
-	assign NaN = ((Num[14:7] == 8'b1111_1111) & (Num[6:0] >= 1));
-	assign Sub_Norm = (Num[14:7] == 8'b0000_0000);
-	assign Normal = ~(Inf || Neg_Inf || NaN || Sub_Norm);
+import ibex_pkg::*;
+
+always_comb begin
+	casez (Num)
+		16'b 0111_1111_1000_0000 : Classif = Inf;
+		16'b 0111_1111_1???_???? : Classif = NaN;
+		16'b 1111_1111_1000_0000 : Classif = Neg_Inf;
+		16'b ?000_0000_????_???? : Classif = Sub_Norm;
+		default: Classif = Normal;
+	endcase
+end
 	
 endmodule

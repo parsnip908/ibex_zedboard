@@ -210,6 +210,13 @@ package ibex_pkg;
     FP_ALU_MADD
   } fp_alu_op_e;
 
+   typedef enum logic [2:0] {
+    Inf,
+    Neg_Inf,
+    NaN,
+    Sub_Norm,
+    Normal
+  } Classif_e;
   
   //////////////////////////////////
   // Control and status registers //
