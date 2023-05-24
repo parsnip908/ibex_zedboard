@@ -8,7 +8,8 @@ module FPU (
 
 import ibex_pkg::*;
 
-logic [15:0] operand_a, operand_b, add_sub_o, mult_o, fp_o, int_o;
+logic [15:0] operand_a, operand_b, add_sub_o, mult_o, fp_o; 
+logic [31:0]int_o;
 Classif_e Classif_a;
 Classif_e Classif_b;
 
