@@ -7,6 +7,7 @@ module int_to_fp (
 import ibex_pkg::*;
 
 logic int_sign;
+logic [31:0] int_i_tmp;
 logic [30:0] int_mag;
 logic [15:0] fp_out_norm;
 logic [7:0] fp_exp;
@@ -17,13 +18,13 @@ integer i;
 always_comb begin    
     
     int_sign = int_i[31];
-    int_i = int_sign? ~int_i + 1 : int_i; // For 2's complement
+    int_i_tmp = int_sign? ~int_i + 1 : int_i; // For 2's complement
     for(i = 0; i <=31; i++) begin
-        if(int_i[i] == 1)
+        if(int_i_tmp[i] == 1)
             pos = i;
     end
     fp_exp = pos + 127;
-    int_mag = int_i[30:0] << (31-pos);
+    int_mag = int_i_tmp[30:0] << (31-pos);
 
     casez (int_mag[23:0])
         24'b 0000_0000_0000_0000_0000_0000 :	fp_sig = int_mag[30:24];

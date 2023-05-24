@@ -7,14 +7,17 @@ module FPU (
 );
 
 import ibex_pkg::*;
-
-logic [15:0] operand_a, operand_b, add_sub_o, mult_o, fp_o; 
-logic [31:0]int_o;
 Classif_e Classif_a;
 Classif_e Classif_b;
 
-assign operand_b = (operator_i == FP_ALU_SUB)? {~operand_b_i[31], operand_b_i[30:16]} : operand_b_i[31:16];
+logic [15:0] operand_a, operand_b, add_sub_o, mult_o, fp_o; 
+logic [31:0]int_o;
+
+
 assign operand_a = operand_a_i[31:16];
+assign operand_b = (operator_i == FP_ALU_SUB)? {~operand_b_i[31], operand_b_i[30:16]} : operand_b_i[31:16];
+
+
 FP_Class class_A(
 	.Num(operand_a), 
 	.Classif(Classif_a)
@@ -41,15 +44,16 @@ Mult Mult(
 	.Classif_op_b(Classif_b)
 	);
 
-int_to_fp cvt(
+int_to_fp cvt_S_W(
 	.int_i(operand_a),
 	.mode_i(mode_i),
 	.fp_o(fp_o)
 );
 
-fp_to_int cvt(
+fp_to_int cvt_W_S(
 	.fp_i(operand_a),
 	.int_o(int_o),
+	.Classif_op_a(Classif_a),
 	.flag()
 );
 	
