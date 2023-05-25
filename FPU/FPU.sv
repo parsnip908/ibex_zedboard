@@ -67,7 +67,7 @@ CMP CMP(
 
 SGNJ SGNJ (
 	.rs1(operand_a),
-	.rs2(operand_b),
+	.rs2(operand_b[15]),
 	.mode_i(mode_i),
 	.rd(sgnj_o)
 );

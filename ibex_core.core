@@ -42,6 +42,8 @@ filesets:
       - FPU/ibex_fp_register_file_fpga.sv
       - FPU/int_to_fp.sv
       - FPU/fp_to_int.sv
+      - FPU/CMP.sv
+      - FPU/SGNJ.sv
       - rtl/ibex_pmp_reset_default.svh: {is_include_file: true}
     file_type: systemVerilogSource
 
