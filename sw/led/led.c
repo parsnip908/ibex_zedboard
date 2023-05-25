@@ -49,45 +49,80 @@ int main(int argc, char **argv) {
   // uint16_t num = 0xAA;
   while (1) {
 
-  asm volatile(
-      "li t1, 16518\n"
-      "li t2, 16605\n"
-      "li t3, 49184\n"
-      "sh t1, 0(t3)\n"
-      "sh t2, 2(t3)\n"
-      "flh ft1, 0(t3)\n"
-      "flh ft2, 2(t3)\n"
-      "fadd.h ft3, ft2, ft1\n"
-      "fmul.h ft4, ft2, ft1\n"
-      "fsh ft3, 4(t3)\n"
-      "fsh ft4, 6(t3)\n"
-      // "li t5, 49168\n"
-      // "addi a5, a5, 16\n"
-      // "fsh ft3, 0(t5)\n"
+asm volatile(
+    "li t1, 0x40860000\n"
+    "li t2, 0x40DD0000\n"
+    //move int to fp
+    "fmv.w.x ft1, t1\n"
+    "fmv.w.x ft2, t2\n"
+    //arithmetic
+    "fadd.s ft3, ft2, ft1\n"
+    "fmul.s ft4, ft2, ft1\n"
+    "fmin.s ft5, ft1, ft2\n"
+    "fmax.s ft5, ft1, ft2\n"
+    "fmin.s ft5, ft2, ft1\n"
+    "fmax.s ft5, ft2, ft1\n"
+    "fsub.s ft2, ft0, ft2\n"
+    //mv fp to int
+    "fmv.x.w t1, ft3\n"
+    "fmv.x.w t2, ft4\n"
+    //comparison
+    "flt.s t3, ft1, ft2\n"
+    "flt.s t3, ft2, ft1\n"
+    "fle.s t3, ft1, ft2\n"
+    "fle.s t3, ft2, ft1\n"
+    "fle.s t3, ft1, ft1\n"
+    "feq.s t3, ft2, ft1\n"
+    "feq.s t3, ft1, ft1\n"
+    //sign injection
+    "fsgnj.s ft5, ft1, ft2\n"
+    "fsgnjn.s ft5, ft1, ft2\n"
+    "fsgnjx.s ft5, ft2, ft2\n"
+    //convert fp to int
+    "fcvt.w.s t1, ft1\n"
+    "fcvt.wu.s t1, ft1\n"
+    "fcvt.w.s t2, ft2\n"
+    "fcvt.wu.s t2, ft2\n"
+    //convert fp to int
+    "li t1, 5458\n"
+    "li t2, -23423\n"
+    "fcvt.s.w ft1, t1\n"
+    "fcvt.s.wu ft1, t1\n"
+    "fcvt.s.w ft2, t2\n"
+    "fcvt.s.wu ft2, t2\n"
+    //reset registers
+    "li t1, 0\n"
+    "li t2, 0\n"
+    "li t3, 0\n"
+    "fmv.w.x ft1, x0\n"    
+    "fmv.w.x ft2, x0\n"    
+    "fmv.w.x ft3, x0\n"    
+    "fmv.w.x ft4, x0\n"    
+    "fmv.w.x ft5, x0\n"    
+    "fmv.w.x ft6, x0\n"    
   );
-
   usleep(1000 * 1000); // 1000 ms
   // *var = 0xFF;
   // usleep(1000 * 1000); // 1000 ms
   *var = 0x00;
 
-  uint16_t num_add = *(uint16_t *)(0x0000c024);
-  uint16_t num_mul = *(uint16_t *)(0x0000c026);
+  // uint16_t num_add = *(uint16_t *)(0x0000c024);
+  // uint16_t num_mul = *(uint16_t *)(0x0000c026);
+
+  //   usleep(1000 * 1000); // 1000 ms
+  //   *var = num_add >> 8;
+  //   usleep(1000 * 1000); // 1000 ms
+  //   *var = num_add & 0xFF;
 
     usleep(1000 * 1000); // 1000 ms
-    *var = num_add >> 8;
-    usleep(1000 * 1000); // 1000 ms
-    *var = num_add & 0xFF;
+    *var = 0xFF;
 
-    usleep(1000 * 1000); // 1000 ms
-    *var = 0x00;
+    // usleep(1000 * 1000); // 1000 ms
+    // *var = num_mul >> 8;
+    // usleep(1000 * 1000); // 1000 ms
+    // *var = num_mul & 0xFF;
 
-    usleep(1000 * 1000); // 1000 ms
-    *var = num_mul >> 8;
-    usleep(1000 * 1000); // 1000 ms
-    *var = num_mul & 0xFF;
-
-    usleep(1000 * 1000); // 1000 ms
-    *var = 0x00;
+    // usleep(1000 * 1000); // 1000 ms
+    // *var = 0x00;
   }
 }

@@ -1301,6 +1301,8 @@ module ibex_decoder #(
           5'b110?0: begin
             fp_alu_operator_o = FP_ALU_CVT;
             fp_alu_mode_o = {instr_alu[28], instr_alu[20]};
+            rf_fp_wdata_sel_o = instr_alu[28];
+            rf_fp_rdata_a_sel_o = ~instr_alu[28];
           end
           5'b111?0: begin
             if(~instr_alu[28] && instr_alu[12])

@@ -44,25 +44,51 @@ int main(int argc, char **argv) {
   volatile uint8_t *var = (volatile uint8_t *) 0x0000c010;
   // volatile uint8_t *result = (volatile uint8_t *) 0x0000c020;
 
-  *var = 0xFF;
-  *var = 0x00;
-
   asm volatile(
     "li t1, 0x40860000\n"
     "li t2, 0x40DD0000\n"
+    //move int to fp
     "fmv.w.x ft1, t1\n"
     "fmv.w.x ft2, t2\n"
+    //arithmetic
     "fadd.s ft3, ft2, ft1\n"
     "fmul.s ft4, ft2, ft1\n"
+    "fmin.s ft5, ft1, ft2\n"
+    "fmax.s ft5, ft1, ft2\n"
+    "fmin.s ft5, ft2, ft1\n"
+    "fmax.s ft5, ft2, ft1\n"
     "fsub.s ft2, ft0, ft2\n"
+    //mv fp to int
+    "fmv.x.w t1, ft3\n"
+    "fmv.x.w t2, ft4\n"
+    //comparison
     "flt.s t3, ft1, ft2\n"
     "flt.s t3, ft2, ft1\n"
-    "li t3, 0\n"
+    "fle.s t3, ft1, ft2\n"
+    "fle.s t3, ft2, ft1\n"
+    "fle.s t3, ft1, ft1\n"
+    "feq.s t3, ft2, ft1\n"
+    "feq.s t3, ft1, ft1\n"
+    //sign injection
     "fsgnj.s ft5, ft1, ft2\n"
     "fsgnjn.s ft5, ft1, ft2\n"
     "fsgnjx.s ft5, ft2, ft2\n"
-    // "fmin.s ft6, ft1, ft2\n"
-    // "fmax.s ft6, ft1, ft2\n"
+    //convert fp to int
+    "fcvt.w.s t1, ft1\n"
+    "fcvt.wu.s t1, ft1\n"
+    "fcvt.w.s t2, ft2\n"
+    "fcvt.wu.s t2, ft2\n"
+    //convert fp to int
+    "li t1, 5458\n"
+    "li t2, -23423\n"
+    "fcvt.s.w ft1, t1\n"
+    "fcvt.s.wu ft1, t1\n"
+    "fcvt.s.w ft2, t2\n"
+    "fcvt.s.wu ft2, t2\n"
+    //reset registers
+    "li t1, 0\n"
+    "li t2, 0\n"
+    "li t3, 0\n"
     "fmv.w.x ft1, x0\n"    
     "fmv.w.x ft2, x0\n"    
     "fmv.w.x ft3, x0\n"    
@@ -73,14 +99,9 @@ int main(int argc, char **argv) {
 
   // FCVT.W.S
   // FCVT.WU.S
-  // FMV.X.W
-  // FEQ.S
-  // FLT.S
-  // FLE.S
-  // FCLASS.S
   // FCVT.S.W
   // FCVT.S.WU
-  // FMV.W.X
+  // FCLASS.S
 
 
 
