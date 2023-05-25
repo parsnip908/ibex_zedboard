@@ -84,6 +84,7 @@ module ibex_core import ibex_pkg::*; #(
   output logic                         rf_fp_wdata_sel_o,
   output logic                         rf_fp_rdata_a_sel_o,
   output logic                         rf_fp_rdata_b_sel_o,
+  output logic                         rf_fp_shift_o,
 
   // RAMs interface
   output logic [IC_NUM_WAYS-1:0]       ic_tag_req_o,
@@ -257,6 +258,7 @@ module ibex_core import ibex_pkg::*; #(
 
   fp_alu_op_e  fp_alu_operator_ex;
   logic        fp_alu_sel_ex;
+  logic [1:0]  fp_alu_mode_ex;
 
   // Multiplier Control
   logic        mult_en_ex;
@@ -559,6 +561,8 @@ module ibex_core import ibex_pkg::*; #(
     .rf_fp_wdata_sel_o    (rf_fp_wdata_sel_o),
     .rf_fp_rdata_a_sel_o  (rf_fp_rdata_a_sel_o),
     .rf_fp_rdata_b_sel_o  (rf_fp_rdata_b_sel_o),
+    .rf_fp_shift_o        (rf_fp_shift_o),
+    .fp_alu_mode_o        (fp_alu_mode_ex),
 
     .imd_val_q_ex_o (imd_val_q_ex),
     .imd_val_d_ex_i (imd_val_d_ex),
@@ -683,6 +687,7 @@ module ibex_core import ibex_pkg::*; #(
 
     .fp_alu_operator_i      (fp_alu_operator_ex),
     .fp_sel                 (fp_alu_sel_ex),
+    .fp_alu_mode_i          (fp_alu_mode_ex),
 
     // Branch target ALU signal from ID stage
     .bt_a_operand_i(bt_a_operand),

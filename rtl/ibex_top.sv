@@ -171,11 +171,11 @@ module ibex_top import ibex_pkg::*; #(
   // logic [4:0]                  fp_rf_raddr_b;
   // logic [4:0]                  fp_rf_waddr_wb;
   logic                        fp_rf_we_wb;
-  // logic [RegFileDataWidth-1:0] fp_rf_wdata_wb_ecc;
+  logic [RegFileDataWidth-1:0] fp_rf_wdata_wb_ecc;
   logic [RegFileDataWidth-1:0] fp_rf_rdata_a_ecc, fp_rf_rdata_a_ecc_buf;
   logic [RegFileDataWidth-1:0] fp_rf_rdata_b_ecc, fp_rf_rdata_b_ecc_buf;
 
-  logic rf_fp_wdata_sel, rf_fp_rdata_a_sel, rf_fp_rdata_b_sel;
+  logic rf_fp_wdata_sel, rf_fp_rdata_a_sel, rf_fp_rdata_b_sel, rf_fp_shift;
   logic rf_int_we_wb;
   // Combined data and integrity for data and instruction busses
   logic [MemDataWidth-1:0]     data_wdata_core;
@@ -260,10 +260,10 @@ module ibex_top import ibex_pkg::*; #(
 
   assign rf_int_we_wb = rf_we_wb & (~rf_fp_wdata_sel);
   assign fp_rf_we_wb  = rf_we_wb & (rf_fp_wdata_sel);
-  assign rf_rdata_a   = rf_fp_rdata_a_sel ? fp_rf_rdata_a_ecc_buf : rf_rdata_a_ecc_buf;
-  assign rf_rdata_b   = rf_fp_rdata_b_sel ? fp_rf_rdata_b_ecc_buf : rf_rdata_b_ecc_buf;
+  assign rf_rdata_a   = rf_fp_rdata_a_sel ? (rf_fp_shift ? (fp_rf_rdata_a_ecc_buf >> 16) : fp_rf_rdata_a_ecc_buf) : rf_rdata_a_ecc_buf;
+  assign rf_rdata_b   = rf_fp_rdata_b_sel ? (rf_fp_shift ? (fp_rf_rdata_b_ecc_buf >> 16) : fp_rf_rdata_b_ecc_buf) : rf_rdata_b_ecc_buf;
   // assign fp_rf_waddr_wb = rf_waddr_wb;
-  // assign fp_rf_wdata_wb_ecc = rf_wdata_wb_ecc;
+  assign fp_rf_wdata_wb_ecc = rf_fp_shift ? (rf_wdata_wb_ecc << 16) : rf_wdata_wb_ecc;
   // assign fp_rf_raddr_a = rf_raddr_a;
   // assign fp_rf_raddr_b = rf_raddr_b;
 
@@ -349,7 +349,8 @@ module ibex_top import ibex_pkg::*; #(
 
     .rf_fp_wdata_sel_o    (rf_fp_wdata_sel),
     .rf_fp_rdata_a_sel_o  (rf_fp_rdata_a_sel),
-    .rf_fp_rdata_b_sel_o  (rf_fp_rdata_b_sel),    
+    .rf_fp_rdata_b_sel_o  (rf_fp_rdata_b_sel),
+    .rf_fp_shift_o        (rf_fp_shift),
 
     .ic_tag_req_o      (ic_tag_req),
     .ic_tag_write_o    (ic_tag_write),
@@ -512,7 +513,7 @@ module ibex_top import ibex_pkg::*; #(
       .fp_raddr_b_i(rf_raddr_b),
       .fp_rdata_b_o(fp_rf_rdata_b_ecc),
       .fp_waddr_a_i(rf_waddr_wb),
-      .fp_wdata_a_i(rf_wdata_wb_ecc),
+      .fp_wdata_a_i(fp_rf_wdata_wb_ecc),
       .fp_we_a_i   (fp_rf_we_wb),
       .err_o    (fp_rf_alert_major_internal)
     );

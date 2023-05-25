@@ -78,6 +78,8 @@ module ibex_decoder #(
   output logic                 rf_fp_wdata_sel_o,     // choose to write back to fp register file
   output logic                 rf_fp_rdata_a_sel_o,   // choose to read from fp register file
   output logic                 rf_fp_rdata_b_sel_o,
+  output logic                 rf_fp_shift_o,
+  output logic [1:0]           fp_alu_mode_o,
 
   // MULT & DIV
   output logic                 mult_en_o,             // perform integer multiplication
@@ -223,6 +225,7 @@ module ibex_decoder #(
     rf_we                 = 1'b0;
     rf_ren_a_o            = 1'b0;
     rf_ren_b_o            = 1'b0;
+    rf_fp_shift_o         = 1'b0;
 
     csr_access_o          = 1'b0;
     csr_illegal           = 1'b0;
@@ -573,10 +576,19 @@ module ibex_decoder #(
       OPCODE_FP_LOAD: begin
         rf_ren_a_o          = 1'b1;
         data_req_o          = 1'b1;
-        data_type_o         = 2'b01;
+        data_type_o         = 2'b00;
         data_sign_extension_o = 0;
-        if(instr[13:12] != 2'b01)
-          illegal_insn = 1'b1;
+
+        // unsigned load does not exist
+        unique case (instr[14:12])
+          3'b001: begin
+            data_type_o = 2'b01; // lh
+            rf_fp_shift_o = 1'b1;  // shift bits up
+          end
+          3'b010: data_type_o = 2'b00; // lw
+          default: illegal_insn = 1'b1;
+        endcase
+
       end
 
       /*
@@ -607,16 +619,14 @@ module ibex_decoder #(
         data_req_o         = 1'b1;
         data_we_o          = 1'b1;
 
-        if (instr[14]) begin
-          illegal_insn = 1'b1;
-        end
-
         // store size
-        unique case (instr[13:12])
-          // 2'b00:   data_type_o  = 2'b10; // sb
-          2'b01:   data_type_o  = 2'b01; // sh
-          2'b10:   data_type_o  = 2'b00; // sw
-          default: illegal_insn = 1'b1;
+        unique case (instr[14:12])
+          3'b001: begin
+            data_type_o = 2'b01; // sh
+            rf_fp_shift_o = 1'b1;  // shift bits down
+          end
+          3'b010:   data_type_o = 2'b00; // sw
+          default:  illegal_insn = 1'b1;
         endcase
         // illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
       end
@@ -625,10 +635,23 @@ module ibex_decoder #(
         rf_ren_a_o  = 1'b1;
         rf_ren_b_o  = 1'b1;
         rf_we       = 1'b1;
-        unique case (instr[31:25])
-          7'b000_0010, 
-          7'b000_0110,
-          7'b000_1010: ; 
+
+        unique case(instr[26:25])
+          2'b00, 2'b10: ;
+          default: illegal_insn = 1'b1; 
+        endcase
+
+        unique case (instr[31:27])
+          5'b00000,
+          5'b00001,
+          5'b00010,
+          5'b00100,
+          5'b00101,
+          5'b11000,
+          5'b11010,
+          5'b11100,
+          5'b11110,
+          5'b10100: ; 
           default: illegal_insn = 1'b1; 
         endcase
       end
@@ -1267,10 +1290,34 @@ module ibex_decoder #(
         rf_fp_wdata_sel_o   = 1'b1;
         rf_fp_rdata_a_sel_o = 1'b1;
         rf_fp_rdata_b_sel_o = 1'b1;
-        unique case (instr_alu[31:25])
-          7'b000_0010: fp_alu_operator_o = FP_ALU_ADD;
-          7'b000_0110: fp_alu_operator_o = FP_ALU_SUB;
-          7'b000_1010: fp_alu_operator_o = FP_ALU_MUL; 
+        fp_alu_mode_o = instr_alu[13:12];
+
+        unique casez (instr_alu[31:27])
+          5'b00000: fp_alu_operator_o = FP_ALU_ADD;
+          5'b00001: fp_alu_operator_o = FP_ALU_SUB;
+          5'b00010: fp_alu_operator_o = FP_ALU_MUL; 
+          5'b00100: fp_alu_operator_o = FP_ALU_SGNJ;
+          5'b00101: fp_alu_operator_o = FP_ALU_MINMAX;
+          5'b110?0: begin
+            fp_alu_operator_o = FP_ALU_CVT;
+            fp_alu_mode_o = {instr_alu[28], instr_alu[20]};
+          end
+          5'b111?0: begin
+            if(~instr_alu[28] && instr_alu[12])
+              fp_alu_operator_o = FP_ALU_CLASS;
+            else begin
+              // move op implemented by adding 0;
+              fp_alu_sel_o = 1'b0;
+              alu_operator_o = ALU_ADD;
+            end
+            rf_fp_wdata_sel_o   = instr_alu[28];
+            rf_fp_rdata_a_sel_o = ~instr_alu[28];
+            rf_fp_rdata_b_sel_o = 1'b0;
+          end
+          5'b10100: begin
+            fp_alu_operator_o = FP_ALU_CMP;
+            rf_fp_wdata_sel_o = 1'b0;
+          end
           default: ; 
         endcase
       end

@@ -199,15 +199,19 @@ package ibex_pkg;
     MD_OP_REM
   } md_op_e;
 
-  ////////////////////
+  ///////////////////////
   // FP_ALU operations //
-  ////////////////////
-  typedef enum logic [1:0] {
-    // Arithmetics
+  ///////////////////////
+  typedef enum logic [2:0] {
     FP_ALU_ADD,
     FP_ALU_SUB,
     FP_ALU_MUL,
-    FP_ALU_MADD
+    // FP_ALU_MADD,
+    FP_ALU_MINMAX,
+    FP_ALU_SGNJ,
+    FP_ALU_CMP,
+    FP_ALU_CVT,
+    FP_ALU_CLASS
   } fp_alu_op_e;
 
    typedef enum logic [2:0] {

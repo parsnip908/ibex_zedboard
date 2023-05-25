@@ -26,6 +26,7 @@ module ibex_ex_block #(
   // FP_ALU
   input  ibex_pkg::fp_alu_op_e  fp_alu_operator_i,
   input  logic                  fp_sel,
+  input  logic [1:0]            fp_alu_mode_i,
 
   // Branch Target ALU
   // All of these signals are unusued when BranchTargetALU == 0
@@ -61,7 +62,7 @@ module ibex_ex_block #(
   import ibex_pkg::*;
 
   logic [31:0] int_result, alu_result, multdiv_result;
-  logic [15:0] fp_alu_result;
+  logic [31:0] fp_alu_result;
   logic [32:0] multdiv_alu_operand_b, multdiv_alu_operand_a;
   logic [33:0] alu_adder_result_ext;
   logic        alu_cmp_result, alu_is_equal_result;
@@ -92,7 +93,7 @@ module ibex_ex_block #(
   assign alu_imd_val_q = '{imd_val_q_i[0][31:0], imd_val_q_i[1][31:0]};
 
   assign int_result  = multdiv_sel ? multdiv_result : alu_result;
-  assign result_ex_o = fp_sel? {16'b0000_0000_0000_0000, fp_alu_result} : int_result;
+  assign result_ex_o = fp_sel? fp_alu_result : int_result;
 
   // branch handling
   assign branch_decision_o  = alu_cmp_result;
@@ -196,15 +197,16 @@ module ibex_ex_block #(
       .multdiv_result_o  (multdiv_result)
     );
   end
-  /////////////
+  ////////////
   // FP_ALU //
   ////////////
-  if (RV32F == RV32Fbfloat) begin
+  if (RV32F == RV32Fbfloat) begin : gen_fpu_bfloat
 
     FPU FPU( 
     .operator_i         (fp_alu_operator_i),
-    .operand_a_i        (alu_operand_a_i[15:0]),
-    .operand_b_i        (alu_operand_b_i[15:0]),
+    .mode_i             (fp_alu_mode_i),
+    .operand_a_i        (alu_operand_a_i),
+    .operand_b_i        (alu_operand_b_i[31:16]),
     .result_o           (fp_alu_result)
     );
   end
