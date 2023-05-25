@@ -44,6 +44,7 @@ filesets:
       - FPU/fp_to_int.sv
       - FPU/CMP.sv
       - FPU/SGNJ.sv
+      - FPU/MinMax.sv
       - rtl/ibex_pmp_reset_default.svh: {is_include_file: true}
     file_type: systemVerilogSource
 
