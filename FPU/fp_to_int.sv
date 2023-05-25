@@ -10,7 +10,7 @@ import ibex_pkg::*;
 logic [7:0]   fp_exp;
 logic [6:0]   fp_sig;
 logic [30:0]  int_mag;
-logic [31:0]  int_o_norm
+logic [31:0]  int_o_norm;
 
 always_comb begin
     fp_exp = fp_i[14:7];

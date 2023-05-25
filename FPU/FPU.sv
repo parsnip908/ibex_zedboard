@@ -1,7 +1,7 @@
 module FPU ( 
 	input  ibex_pkg::fp_alu_op_e operator_i,
   	input  logic [31:0]			 operand_a_i,
-  	input  logic [31:0]          operand_b_i,
+  	input  logic [15:0]          operand_b_i,
 	input  logic [1:0]           mode_i,
 	output logic [31:0]          result_o
 );
@@ -15,7 +15,7 @@ logic [31:0]int_o;
 
 
 assign operand_a = operand_a_i[31:16];
-assign operand_b = (operator_i == FP_ALU_SUB)? {~operand_b_i[31], operand_b_i[30:16]} : operand_b_i[31:16];
+assign operand_b = (operator_i == FP_ALU_SUB)? {~operand_b_i[15], operand_b_i[14:0]} : operand_b_i;
 
 
 FP_Class class_A(

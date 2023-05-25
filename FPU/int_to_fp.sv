@@ -13,15 +13,18 @@ logic [15:0] fp_out_norm;
 logic [7:0] fp_exp;
 logic [6:0] fp_sig;
 logic [4:0] pos;
-logic [4:0] i;
+int i;
 
 always_comb begin    
     
     int_sign = (mode_i)? 1'b 0: int_i[31];
     int_i_tmp = int_sign? ~int_i + 1 : int_i; // For 2's complement
-    for(i = 0; i <=31; i++) begin
-        if(int_i_tmp[i] == 1)
-            pos = i;
+    if(int_i == 32'd0) pos = 0;
+    else begin
+        for(i = 0; i < 32; i++) begin
+            if(int_i_tmp[i] == 1)
+                pos = i[4:0];
+        end
     end
     fp_exp = {2'b 00, pos} + 8'd 127;
     int_mag = int_i_tmp[30:0] << (31-pos);
