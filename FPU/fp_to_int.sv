@@ -13,12 +13,7 @@ logic [7:0]     fp_exp;
 logic [7:0]     shift;
 logic [30:0]    int_s;
 logic [31:0]    int_rd; //Before rounding
-logic [31:0]    int_o_norm;
-
-initial begin
-    fp_i = 16'b 0100000011001111;
-    mode_i = 0;
-end        
+logic [31:0]    int_o_norm;    
 
 always_comb begin
     fp_exp = fp_i[14:7];
