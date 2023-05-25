@@ -1,6 +1,6 @@
 module int_to_fp (
     input  logic [31:0] int_i,
-    input  logic mode_i,
+    input  logic        mode_i,
     output logic [15:0] fp_o
 );
 
@@ -36,7 +36,7 @@ always_comb begin
         default: fp_sig = int_mag[30:24];
     endcase
 
-    fp_out_norm[15] = int_sign;  // For Signed int 
+    fp_out_norm[15] = int_sign; 
     fp_out_norm[14:0] = {fp_exp[7:0], fp_sig[6:0]};
 end
 
