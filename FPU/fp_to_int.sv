@@ -18,15 +18,15 @@ logic [31:0]    int_o_norm;
 always_comb begin
     fp_exp = fp_i[14:7];
     fp_sig = fp_i[6:0];
-    int_s = 32'd 0;
+    int_s = 31'd 0;
     if(mode_i) begin  
         shift  = 8'd 158 - fp_exp;
         int_rd[31:0] = (fp_i[15])? 32'd 0 : (shift > 32)? 32'd 4294967295: {1'd 1, fp_sig, 24'd 0} >> shift;
     end
     else begin 
         shift  = 8'd 157 - fp_exp;
-        int_s[30:0] = (shift > 32)? 31'd 2147483647 : {1'd 1, fp_sig, 23'd 0} >> shift;
-        int_rd = (fp_i[15])? {fp_i[15], ~int_s[30:0] + 31'd 1} : {fp_i[15], int_s};
+        int_s = (shift > 32)? 31'd 2147483647 : {1'd 1, fp_sig, 23'd 0} >> shift;
+        int_rd = (fp_i[15])? {fp_i[15], ~int_s + 31'd 1} : {fp_i[15], int_s};
     end
     case (fp_exp)
         8'd 127 : int_o_norm = (fp_sig[6])? int_rd + 1 : int_rd;
