@@ -49,3 +49,4 @@ sw/sim/sim.vmem
 
 sim.fst
 
+sw/MNIST/dataset_gen.x
