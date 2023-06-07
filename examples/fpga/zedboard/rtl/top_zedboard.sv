@@ -10,7 +10,7 @@ module top_zedboard (
 
   parameter int          FPGAPowerAnalysis = 0;
   // Choose 64kb memory for normal builds and 256kb for FPGAPowerAnalysis builds.
-  parameter int          MEM_SIZE          = FPGAPowerAnalysis == 0 ? 64 * 1024 : 256 * 1024;
+  parameter int          MEM_SIZE          = FPGAPowerAnalysis == 0 ? 128 * 1024 : 256 * 1024;
   parameter logic [31:0] MEM_START         = 32'h00000000;
   parameter logic [31:0] MEM_MASK          = MEM_SIZE-1;
   parameter              SRAMInitFile      = "";
@@ -122,7 +122,7 @@ module top_zedboard (
     if (!rst_sys_n) begin
       leds <= 8'b0;
     end else begin
-      if (data_req && data_we && data_addr == 32'h0000c010 && data_be[0]) begin
+      if (data_req && data_we && data_addr == 32'h00018010 && data_be[0]) begin
         leds <= data_wdata[7:0];
       end
     end

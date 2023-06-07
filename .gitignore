@@ -45,8 +45,11 @@ sw/led/led.s
 sw/led/led.vmem
 sw/sim/sim.s
 sw/sim/sim.vmem
-
+sw/Matrix/Matrix.s
+sw/Matrix/Matrix.vmem
+sw/MNIST/mnist_tester.s
+sw/MNIST/mnist_tester.vmem
+sw/MNIST/dataset_gen.x
+sw/MNIST/gen_test_set.c
 
 sim.fst
-
-sw/MNIST/dataset_gen.x

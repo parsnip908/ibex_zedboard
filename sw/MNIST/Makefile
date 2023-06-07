@@ -22,14 +22,14 @@ OBJDUMP ?= $(CROSS_COMPILE)objdump
 LINKER_SCRIPT ?= link.ld
 CRT ?= crt0.S
 CFLAGS ?= -march=$(ARCH) -mabi=ilp32 -static -mcmodel=medany -mno-fdiv \
-	-O1 -floop-unroll-and-jam -fvisibility=hidden  -nostartfiles $(PROGRAM_CFLAGS)
+	-O1 -fvisibility=hidden -nostartfiles $(PROGRAM_CFLAGS)
 
 OBJS := ${SRCS:.c=.o} ${CRT:.S=.o}
 DEPS = $(OBJS:%.o=%.d)
 
 OUTFILES = $(PROGRAM).elf $(PROGRAM).vmem $(PROGRAM).bin $(PROGRAM).dis $(PROGRAM).s
 
-all: $(OUTFILES)
+all: clean $(OUTFILES)
 
 $(PROGRAM).elf: $(OBJS) $(LINKER_SCRIPT)
 	$(CC) $(CFLAGS) -T $(LINKER_SCRIPT) $(OBJS) -o $@ $(LIBS)

@@ -8,8 +8,8 @@ __DYNAMIC  =  0;
 
 MEMORY
 {
-    rom         : ORIGIN = 0x00000000, LENGTH = 0x78000 /* 96 kB */
-    stack       : ORIGIN = 0x00078000, LENGTH = 0x08000 /* 32 kB */
+    rom         : ORIGIN = 0x00000000, LENGTH = 0x18000 /* 96 kB */
+    stack       : ORIGIN = 0x00018000, LENGTH = 0x8000 /* 32 kB */
 }
 
 /* Stack information variables */
