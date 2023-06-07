@@ -11,6 +11,7 @@
 module ibex_ex_block #(
   parameter ibex_pkg::rv32m_e RV32M           = ibex_pkg::RV32MFast,
   parameter ibex_pkg::rv32b_e RV32B           = ibex_pkg::RV32BNone,
+  parameter ibex_pkg::rv32f_e RV32F           = ibex_pkg::RV32FNone,
   parameter bit               BranchTargetALU = 0
 ) (
   input  logic                  clk_i,
@@ -18,9 +19,14 @@ module ibex_ex_block #(
 
   // ALU
   input  ibex_pkg::alu_op_e     alu_operator_i,
-  input  logic [31:0]           alu_operand_a_i,
-  input  logic [31:0]           alu_operand_b_i,
+  input  logic [31:0]           alu_operand_a_i,  // input for either ALU or FP_ALU
+  input  logic [31:0]           alu_operand_b_i,  // input for either ALU or FP_ALU
   input  logic                  alu_instr_first_cycle_i,
+
+  // FP_ALU
+  input  ibex_pkg::fp_alu_op_e  fp_alu_operator_i,
+  input  logic                  fp_sel,
+  input  logic [1:0]            fp_alu_mode_i,
 
   // Branch Target ALU
   // All of these signals are unusued when BranchTargetALU == 0
@@ -55,8 +61,8 @@ module ibex_ex_block #(
 
   import ibex_pkg::*;
 
-  logic [31:0] alu_result, multdiv_result;
-
+  logic [31:0] int_result, alu_result, multdiv_result;
+  logic [31:0] fp_alu_result;
   logic [32:0] multdiv_alu_operand_b, multdiv_alu_operand_a;
   logic [33:0] alu_adder_result_ext;
   logic        alu_cmp_result, alu_is_equal_result;
@@ -86,7 +92,8 @@ module ibex_ex_block #(
 
   assign alu_imd_val_q = '{imd_val_q_i[0][31:0], imd_val_q_i[1][31:0]};
 
-  assign result_ex_o  = multdiv_sel ? multdiv_result : alu_result;
+  assign int_result  = multdiv_sel ? multdiv_result : alu_result;
+  assign result_ex_o = fp_sel? fp_alu_result : int_result;
 
   // branch handling
   assign branch_decision_o  = alu_cmp_result;
@@ -190,7 +197,19 @@ module ibex_ex_block #(
       .multdiv_result_o  (multdiv_result)
     );
   end
+  ////////////
+  // FP_ALU //
+  ////////////
+  if (RV32F == RV32Fbfloat) begin : gen_fpu_bfloat
 
+    FPU FPU( 
+    .operator_i         (fp_alu_operator_i),
+    .mode_i             (fp_alu_mode_i),
+    .operand_a_i        (alu_operand_a_i),
+    .operand_b_i        (alu_operand_b_i[31:16]),
+    .result_o           (fp_alu_result)
+    );
+  end
   // Multiplier/divider may require multiple cycles. The ALU output is valid in the same cycle
   // unless the intermediate result register is being written (which indicates this isn't the
   // final cycle of ALU operation).

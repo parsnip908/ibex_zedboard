@@ -17,6 +17,7 @@ module ibex_decoder #(
   parameter bit RV32E               = 0,
   parameter ibex_pkg::rv32m_e RV32M = ibex_pkg::RV32MFast,
   parameter ibex_pkg::rv32b_e RV32B = ibex_pkg::RV32BNone,
+  parameter ibex_pkg::rv32f_e RV32F = ibex_pkg::RV32FNone,
   parameter bit BranchTargetALU     = 0
 ) (
   input  logic                 clk_i,
@@ -70,6 +71,15 @@ module ibex_decoder #(
   output ibex_pkg::op_b_sel_e  alu_op_b_mux_sel_o,    // operand b selection: reg value or
                                                       // immediate
   output logic                 alu_multicycle_o,      // ternary bitmanip instruction
+
+  // FP_ALU
+  output ibex_pkg::fp_alu_op_e fp_alu_operator_o,     // FP_ALU operation selection
+  output logic                 fp_alu_sel_o,
+  output logic                 rf_fp_wdata_sel_o,     // choose to write back to fp register file
+  output logic                 rf_fp_rdata_a_sel_o,   // choose to read from fp register file
+  output logic                 rf_fp_rdata_b_sel_o,
+  output logic                 rf_fp_shift_o,
+  output logic [1:0]           fp_alu_mode_o,
 
   // MULT & DIV
   output logic                 mult_en_o,             // perform integer multiplication
@@ -215,6 +225,7 @@ module ibex_decoder #(
     rf_we                 = 1'b0;
     rf_ren_a_o            = 1'b0;
     rf_ren_b_o            = 1'b0;
+    rf_fp_shift_o         = 1'b0;
 
     csr_access_o          = 1'b0;
     csr_illegal           = 1'b0;
@@ -558,6 +569,93 @@ module ibex_decoder #(
         end
       end
 
+      ////////////
+      // FP_ALU //
+      ////////////
+
+      OPCODE_FP_LOAD: begin
+        rf_ren_a_o          = 1'b1;
+        data_req_o          = 1'b1;
+        data_type_o         = 2'b00;
+        data_sign_extension_o = 0;
+
+        // unsigned load does not exist
+        unique case (instr[14:12])
+          3'b001: begin
+            data_type_o = 2'b01; // lh
+            rf_fp_shift_o = 1'b1;  // shift bits up
+          end
+          3'b010: data_type_o = 2'b00; // lw
+          default: illegal_insn = 1'b1;
+        endcase
+
+      end
+
+      /*
+      OPCODE_STORE: begin
+        rf_ren_a_o         = 1'b1;
+        rf_ren_b_o         = 1'b1;
+        data_req_o         = 1'b1;
+        data_we_o          = 1'b1;
+
+        if (instr[14]) begin
+          illegal_insn = 1'b1;
+        end
+
+        // store size
+        unique case (instr[13:12])
+          2'b00:   data_type_o  = 2'b10; // sb
+          2'b01:   data_type_o  = 2'b01; // sh
+          2'b10:   data_type_o  = 2'b00; // sw
+          default: illegal_insn = 1'b1;
+        endcase
+      end
+
+      */
+  
+      OPCODE_FP_STORE: begin
+        rf_ren_a_o         = 1'b1;
+        rf_ren_b_o         = 1'b1;
+        data_req_o         = 1'b1;
+        data_we_o          = 1'b1;
+
+        // store size
+        unique case (instr[14:12])
+          3'b001: begin
+            data_type_o = 2'b01; // sh
+            rf_fp_shift_o = 1'b1;  // shift bits down
+          end
+          3'b010:   data_type_o = 2'b00; // sw
+          default:  illegal_insn = 1'b1;
+        endcase
+        // illegal_insn = (instr[13:12] == 2'b01)? 1'b0 : 1'b1 ;
+      end
+
+      OPCODE_FP_OP : begin
+        rf_ren_a_o  = 1'b1;
+        rf_ren_b_o  = 1'b1;
+        rf_we       = 1'b1;
+
+        unique case(instr[26:25])
+          2'b00, 2'b10: ;
+          default: illegal_insn = 1'b1; 
+        endcase
+
+        unique case (instr[31:27])
+          5'b00000,
+          5'b00001,
+          5'b00010,
+          5'b00100,
+          5'b00101,
+          5'b11000,
+          5'b11010,
+          5'b11100,
+          5'b11110,
+          5'b10100: ; 
+          default: illegal_insn = 1'b1; 
+        endcase
+      end
+      
       /////////////
       // Special //
       /////////////
@@ -669,23 +767,28 @@ module ibex_decoder #(
   /////////////////////////////
 
   always_comb begin
-    alu_operator_o     = ALU_SLTU;
-    alu_op_a_mux_sel_o = OP_A_IMM;
-    alu_op_b_mux_sel_o = OP_B_IMM;
+    alu_operator_o      = ALU_SLTU;
+    alu_op_a_mux_sel_o  = OP_A_IMM;
+    alu_op_b_mux_sel_o  = OP_B_IMM;
 
-    imm_a_mux_sel_o    = IMM_A_ZERO;
-    imm_b_mux_sel_o    = IMM_B_I;
+    imm_a_mux_sel_o     = IMM_A_ZERO;
+    imm_b_mux_sel_o     = IMM_B_I;
 
-    bt_a_mux_sel_o     = OP_A_CURRPC;
-    bt_b_mux_sel_o     = IMM_B_I;
+    bt_a_mux_sel_o      = OP_A_CURRPC;
+    bt_b_mux_sel_o      = IMM_B_I;
 
+    fp_alu_sel_o        = 1'b0;
+    rf_fp_wdata_sel_o   = 1'b0;
+    rf_fp_rdata_a_sel_o = 1'b0;
+    rf_fp_rdata_b_sel_o = 1'b0;
+    fp_alu_operator_o   = FP_ALU_ADD;
 
-    opcode_alu         = opcode_e'(instr_alu[6:0]);
+    opcode_alu          = opcode_e'(instr_alu[6:0]);
 
-    use_rs3_d          = 1'b0;
-    alu_multicycle_o   = 1'b0;
-    mult_sel_o         = 1'b0;
-    div_sel_o          = 1'b0;
+    use_rs3_d           = 1'b0;
+    alu_multicycle_o    = 1'b0;
+    mult_sel_o          = 1'b0;
+    div_sel_o           = 1'b0;
 
     unique case (opcode_alu)
 
@@ -1132,6 +1235,95 @@ module ibex_decoder #(
           endcase
         end
       end
+
+      ////////////
+      // FP_ALU //
+      ////////////
+      /*
+       OPCODE_STORE: begin
+        alu_op_a_mux_sel_o = OP_A_REG_A;
+        alu_op_b_mux_sel_o = OP_B_REG_B;
+        alu_operator_o     = ALU_ADD;
+
+        if (!instr_alu[14]) begin
+          // offset from immediate
+          imm_b_mux_sel_o     = IMM_B_S;
+          alu_op_b_mux_sel_o  = OP_B_IMM;
+        end
+      end
+
+      OPCODE_LOAD: begin
+        alu_op_a_mux_sel_o  = OP_A_REG_A;
+
+        // offset from immediate
+        alu_operator_o      = ALU_ADD;
+        alu_op_b_mux_sel_o  = OP_B_IMM;
+        imm_b_mux_sel_o     = IMM_B_I;
+      end
+    
+      */
+      OPCODE_FP_STORE : begin
+        rf_fp_rdata_a_sel_o = 1'b0;
+        rf_fp_rdata_b_sel_o = 1'b1;
+        alu_op_a_mux_sel_o  = OP_A_REG_A;
+        //alu_op_b_mux_sel_o  = OP_B_REG_B;
+        alu_operator_o      = ALU_ADD;
+        // offset from immediate
+        imm_b_mux_sel_o     = IMM_B_S;
+        alu_op_b_mux_sel_o  = OP_B_IMM;
+      end
+
+      OPCODE_FP_LOAD : begin
+        rf_fp_wdata_sel_o   = 1'b1;
+        rf_fp_rdata_a_sel_o = 1'b0;
+        alu_op_a_mux_sel_o  = OP_A_REG_A;
+        alu_operator_o      = ALU_ADD;
+        alu_op_b_mux_sel_o  = OP_B_IMM;
+        imm_b_mux_sel_o     = IMM_B_I;
+
+      end
+
+      OPCODE_FP_OP: begin
+        alu_op_a_mux_sel_o  = OP_A_REG_A;
+        alu_op_b_mux_sel_o  = OP_B_REG_B;
+        fp_alu_sel_o        = 1'b1;
+        rf_fp_wdata_sel_o   = 1'b1;
+        rf_fp_rdata_a_sel_o = 1'b1;
+        rf_fp_rdata_b_sel_o = 1'b1;
+        fp_alu_mode_o = instr_alu[13:12];
+
+        unique casez (instr_alu[31:27])
+          5'b00000: fp_alu_operator_o = FP_ALU_ADD;
+          5'b00001: fp_alu_operator_o = FP_ALU_SUB;
+          5'b00010: fp_alu_operator_o = FP_ALU_MUL; 
+          5'b00100: fp_alu_operator_o = FP_ALU_SGNJ;
+          5'b00101: fp_alu_operator_o = FP_ALU_MINMAX;
+          5'b110?0: begin
+            fp_alu_operator_o = FP_ALU_CVT;
+            fp_alu_mode_o = {instr_alu[28], instr_alu[20]};
+            rf_fp_wdata_sel_o = instr_alu[28];
+            rf_fp_rdata_a_sel_o = ~instr_alu[28];
+          end
+          5'b111?0: begin
+            if(~instr_alu[28] && instr_alu[12])
+              fp_alu_operator_o = FP_ALU_CLASS;
+            else begin
+              // move op implemented by adding 0;
+              fp_alu_sel_o = 1'b0;
+              alu_operator_o = ALU_ADD;
+            end
+            rf_fp_wdata_sel_o   = instr_alu[28];
+            rf_fp_rdata_a_sel_o = ~instr_alu[28];
+            rf_fp_rdata_b_sel_o = 1'b0;
+          end
+          5'b10100: begin
+            fp_alu_operator_o = FP_ALU_CMP;
+            rf_fp_wdata_sel_o = 1'b0;
+          end
+          default: ; 
+        endcase
+      end
+
 
       /////////////
       // Special //

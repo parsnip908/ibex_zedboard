@@ -137,3 +137,17 @@ test-cfg:
 .PHONY: python-lint
 python-lint:
 	$(MAKE) -C util lint
+
+build-sim:
+	fusesoc --cores-root=. run --target=sim --setup --build \
+		lowrisc:ibex:ibex_simple_system --RV32E=0 \
+		--RV32M=ibex_pkg::RV32MFast --RegFile=ibex_pkg::RegFileFPGA \
+		&& echo -ne '\007' || { echo -ne '\007'; exit 1; }
+
+run-sim:
+	make -C ./sw/sim/
+	timeout -s SIGINT 2 ./build/lowrisc_ibex_ibex_simple_system_0/sim-verilator/Vibex_simple_system -t --meminit=ram,./sw/sim/sim.vmem
+
+sim: build-sim run-sim
+
+both: sim build-zedboard

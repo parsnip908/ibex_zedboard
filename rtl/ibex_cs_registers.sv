@@ -26,7 +26,8 @@ module ibex_cs_registers #(
   parameter int unsigned      PMPNumRegions     = 4,
   parameter bit               RV32E             = 0,
   parameter ibex_pkg::rv32m_e RV32M             = ibex_pkg::RV32MFast,
-  parameter ibex_pkg::rv32b_e RV32B             = ibex_pkg::RV32BNone
+  parameter ibex_pkg::rv32b_e RV32B             = ibex_pkg::RV32BNone,
+  parameter ibex_pkg::rv32f_e RV32F             = ibex_pkg::RV32FNone
 ) (
   // Clock and Reset
   input  logic                 clk_i,

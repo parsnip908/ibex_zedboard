@@ -12,8 +12,7 @@
  * FPGA architectures, it will produce RAM32M primitives. Other vendors have not yet been tested.
  */
 module  ibex_fp_register_file_fpga #(
-    parameter bit                   RV32E             = 0,
-    parameter int unsigned          DataWidth         = 16,
+    parameter int unsigned          DataWidth         = 32,
     parameter bit                   DummyInstructions = 0,
     parameter bit                   WrenCheck         = 0,
     parameter logic [DataWidth-1:0] WordZeroVal       = '0
@@ -21,9 +20,6 @@ module  ibex_fp_register_file_fpga #(
   // Clock and Reset
   input  logic                 clk_i,
   input  logic                 rst_ni,
-
-  input  logic                 test_en_i,
-  input  logic                 dummy_instr_id_i,
 
   //Read port R1
   input  logic [          4:0] fp_raddr_a_i,
@@ -40,20 +36,20 @@ module  ibex_fp_register_file_fpga #(
   output logic                 err_o
 );
 
-  localparam int ADDR_WIDTH = RV32E ? 4 : 5;
+  localparam int ADDR_WIDTH = 5;
   localparam int NUM_WORDS = 2 ** ADDR_WIDTH;
 
   logic [DataWidth-1:0] fp_mem[NUM_WORDS];
   logic we; // write enable if writing to any register other than R0
 
   // async_read a
-  assign fp_rdata_a_o = (fp_raddr_a_i == '0) ? '0 : fp_mem[fp_raddr_a_i];
+  assign fp_rdata_a_o = fp_mem[fp_raddr_a_i];
 
   // async_read b
-  assign fp_rdata_b_o = (fp_raddr_b_i == '0) ? '0 : fp_mem[fp_raddr_b_i];
+  assign fp_rdata_b_o = fp_mem[fp_raddr_b_i];
 
   // we select
-  assign we = (fp_waddr_a_i == '0) ? 1'b0 : fp_we_a_i;
+  assign we = fp_we_a_i;
 
   // SEC_CM: DATA_REG_SW.GLITCH_DETECT
   // This checks for spurious WE strobes on the regfile.
@@ -85,12 +81,5 @@ module  ibex_fp_register_file_fpga #(
   // Reset not used in this register file version
   logic unused_rst_ni;
   assign unused_rst_ni = rst_ni;
-
-  // Dummy instruction changes not relevant for FPGA implementation
-  logic unused_dummy_instr;
-  assign unused_dummy_instr = dummy_instr_id_i;
-  // Test enable signal not used in FPGA implementation
-  logic unused_test_en;
-  assign unused_test_en = test_en_i;
 
 endmodule

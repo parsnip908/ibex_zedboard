@@ -51,18 +51,26 @@ package ibex_pkg;
     RV32BFull       = 3
   } rv32b_e;
 
+  typedef enum integer {
+    RV32FNone       = 0,
+    RV32Fbfloat     = 1
+  } rv32f_e;
+
   /////////////
   // Opcodes //
   /////////////
 
   typedef enum logic [6:0] {
     OPCODE_LOAD     = 7'h03,
+    OPCODE_FP_LOAD  = 7'h07, // FP_LOAD
     OPCODE_MISC_MEM = 7'h0f,
     OPCODE_OP_IMM   = 7'h13,
     OPCODE_AUIPC    = 7'h17,
     OPCODE_STORE    = 7'h23,
+    OPCODE_FP_STORE = 7'h27, // FP_STORE
     OPCODE_OP       = 7'h33,
     OPCODE_LUI      = 7'h37,
+    OPCODE_FP_OP    = 7'h53, // FP_ALU
     OPCODE_BRANCH   = 7'h63,
     OPCODE_JALR     = 7'h67,
     OPCODE_JAL      = 7'h6f,
@@ -191,7 +199,29 @@ package ibex_pkg;
     MD_OP_REM
   } md_op_e;
 
+  ///////////////////////
+  // FP_ALU operations //
+  ///////////////////////
+  typedef enum logic [2:0] {
+    FP_ALU_ADD,
+    FP_ALU_SUB,
+    FP_ALU_MUL,
+    // FP_ALU_MADD,
+    FP_ALU_MINMAX,
+    FP_ALU_SGNJ,
+    FP_ALU_CMP,
+    FP_ALU_CVT,
+    FP_ALU_CLASS
+  } fp_alu_op_e;
 
+   typedef enum logic [2:0] {
+    Inf,
+    Neg_Inf,
+    NaN,
+    Sub_Norm,
+    Normal
+  } Classif_e;
+  
   //////////////////////////////////
   // Control and status registers //
   //////////////////////////////////

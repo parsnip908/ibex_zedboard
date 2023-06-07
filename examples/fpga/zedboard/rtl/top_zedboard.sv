@@ -3,24 +3,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module top_zedboard (
-  input         IO_CLK,
-  input         IO_RST_N,
-  output [7:0]  LED,
-  input         btnR,// CPU Reset Button turns the display on and off
-  input         btnC,// Center DPad Button turns every pixel on the display on or resets to previous state
-  // input btnD,// Upper DPad Button updates the delay to the contents of the local memory
-  // input btnU,// Bottom DPad Button clears the display
-  output        oled_sdin,
-  output        oled_sclk,
-  output        oled_dc,
-  output        oled_res,
-  output        oled_vbat,
-  output        oled_vdd
+    input               IO_CLK,
+    input               IO_RST_N,
+    output [7:0]        LED
 );
 
   parameter int          FPGAPowerAnalysis = 0;
   // Choose 64kb memory for normal builds and 256kb for FPGAPowerAnalysis builds.
-  parameter int          MEM_SIZE          = FPGAPowerAnalysis == 0 ? 64 * 1024 : 256 * 1024;
+  parameter int          MEM_SIZE          = FPGAPowerAnalysis == 0 ? 128 * 1024 : 256 * 1024;
   parameter logic [31:0] MEM_START         = 32'h00000000;
   parameter logic [31:0] MEM_MASK          = MEM_SIZE-1;
   parameter              SRAMInitFile      = "";
@@ -46,6 +36,7 @@ module top_zedboard (
 
   ibex_top #(
      .RegFile(ibex_pkg::RegFileFPGA),
+     .RV32F(ibex_pkg::RV32Fbfloat),
      .DmHaltAddr(32'h00000000),
      .DmExceptionAddr(32'h00000000)
   ) u_top (
@@ -124,65 +115,30 @@ module top_zedboard (
   assign instr_gnt = instr_req;
   assign data_gnt  = data_req;
 
+  // Connect the LED output to the lower four bits of the most significant
+  // byte
   logic [7:0] leds;
-
-  logic OLED_wr_en;
-  wire  [5:0] OLED_read_addr;
-  logic [5:0] OLED_write_addr;
-  logic [7:0] OLED_write_data;
-  wire  [7:0] OLED_read_data;
-
-  charRAM charRAM(
-    clk_sys, 
-    OLED_wr_en,
-    OLED_read_addr,
-    OLED_write_addr,
-    OLED_write_data,
-    OLED_read_data
-  );
-
-  always @(posedge clk_sys) begin
+  always_ff @(posedge clk_sys or negedge rst_sys_n) begin
     if (!rst_sys_n) begin
       leds <= 8'b0;
-      OLED_wr_en <= 0;
-    end else if (data_req && data_we && data_be[0]) begin
-      if(data_addr == 32'h0000c010) begin
+    end else begin
+      if (data_req && data_we && data_addr == 32'h00018010 && data_be[0]) begin
         leds <= data_wdata[7:0];
-        OLED_wr_en <= 0;
-      end 
-      if (data_addr[31:6] == 26'h0000300) begin
-        OLED_wr_en <= 1;
-        OLED_write_addr <= data_addr[5:0];
-        OLED_write_data <= data_wdata[7:0];
       end
-    end else
-      OLED_wr_en <= 0;
+    end
   end
-
   assign LED = leds;
 
-  OLEDFSM OLEDFSM(
-    .clk        (clk_sys),
-    .btnR       (btnR),
-    .btnC       (btnC),
-    .oled_sdin  (oled_sdin),
-    .oled_sclk  (oled_sclk),
-    .oled_dc    (oled_dc),
-    .oled_res   (oled_res),
-    .oled_vbat  (oled_vbat),
-    .oled_vdd   (oled_vdd),
-    // .led        (led),
-    .RAM_addr   (OLED_read_addr),
-    .write_ascii_data   (OLED_read_data)
-  );
-
-
   // Clock and reset
+
+  // always @(posedge clk_buf)
+  //   clk_sys <= ~clk_sys;
+
   clkgen_xil7series
     clkgen(
       .IO_CLK,
       .IO_RST_N,
-      .clk_sys,
+      .clk_sys, //(clk_buf)
       .rst_sys_n
     );
 
