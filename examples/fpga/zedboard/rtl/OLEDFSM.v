@@ -226,9 +226,10 @@ module charRAM (
     reg [7:0] mem [63:0];
 
     always @(posedge clk) begin
-        read_data <= mem[read_addr];
         if(wr_en)
-          mem[write_addr] <= write_addr;
+            mem[write_addr] <= write_data;
+        else
+            read_data <= mem[read_addr];
     end
 
     initial begin
