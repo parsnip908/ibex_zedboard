@@ -136,32 +136,26 @@ int main(int argc, char *argv[])
     //     "li t6, 0x38010\n"
     //     "lw t6, 0(t6)\n"
     // );
-
-    flushOutput();
-    usleep(1000 * 1000); // 1000 ms
-    sprintf(output+00, " MNIST acc:");
-    sprintf(output+16, " %d/%d!!", acc, (unsigned int) test_set.size);
-    sprintf(output+32, " -------------- ");
-    sprintf(output+48, " We did it boys ");
-    flushOutput();
-    usleep(1000 * 1000); // 1000 ms
-    sprintf(output+00, " Let's do math: ");
-    *final = 1;
-    usleep(1000 * 1000); // 1000 ms
-    sprintf(output+17, "%e*%e", nums[0], nums[1]);
-    *final = 2;
-    usleep(1000 * 1000); // 1000 ms
-    sprintf(output+32, " = %e ", (float) nums[0] * (float) nums[1]);
-    *final = 3;
-    usleep(1000 * 1000); // 1000 ms
-    flushOutput();
-
-
     while(1)
     {
-        usleep(1000 * 500); // 1000 ms
-        *final = 0x55;
-        usleep(1000 * 500); // 1000 ms
+        flushOutput();
+        usleep(1000 * 1000); // 1000 ms
+        sprintf(output+00, " MNIST acc:");
+        sprintf(output+16, " %d/%d!!", acc, (unsigned int) test_set.size);
+        sprintf(output+32, " -------------- ");
+        sprintf(output+48, " We did it boyz ");
+        flushOutput();
+        usleep(1000 * 1000); // 1000 ms
+        sprintf(output+00, " Let's do math: ");
+        sprintf(output+16, " 127.5 * 0.125  ");
+        sprintf(output+32, " =  15.9375     ");
+        sprintf(output+48, " We did it boyz ");
+        flushOutput();
+        usleep(1000 * 1000); // 1000 ms
+        sprintf(output+00, " Let's do math: ");
+        sprintf(output+16, " 3.14 + 0.09345");
+        sprintf(output+32, " =  3.234375");
+        sprintf(output+48, " We did it boyz ");
     }
 
     return 0;
