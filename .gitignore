@@ -53,3 +53,8 @@ sw/MNIST/dataset_gen.x
 sw/MNIST/gen_test_set.c
 
 sim.fst
+sw/demo/demo.s
+sw/demo/demo.vmem
+sw/demo/gen_test_set.c
+sw/demo/dataset_gen.x
+sw/demo/mnist

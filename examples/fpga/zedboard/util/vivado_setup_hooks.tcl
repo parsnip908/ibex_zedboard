@@ -15,9 +15,15 @@ if {$FPGAPowerAnalysis == 1} {
 
 puts "hello!!"
 puts [pwd]
-import_file "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/imports/src/other/characterLib.coe"
-import_file "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/imports/src/other/init_sequence.coe"
+import_file "${workroot}/../src/lowrisc_ibex_top_zedboard_0.1/imports/other/characterLib.coe"
+import_file "${workroot}/../src/lowrisc_ibex_top_zedboard_0.1/imports/other/init_sequence.coe"
 puts "coeDone"
-import_ip "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/ip/charLib/charLib.xci"
-import_ip "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/ip/init_sequence_rom/init_sequence_rom.xci"
-import_ip "C:/Users/pkhar/Documents/hw/hw.srcs/sources_1/ip/pixel_buffer/pixel_buffer.xci"
+import_ip "C:/Users/pkhar/Documents/2022-23_School_Work/EEC181/ibex_zedboard/examples/fpga/zedboard/ip/charLib/charLib.xci"
+import_ip "C:/Users/pkhar/Documents/2022-23_School_Work/EEC181/ibex_zedboard/examples/fpga/zedboard/ip/init_sequence_rom/init_sequence_rom.xci"
+import_ip "C:/Users/pkhar/Documents/2022-23_School_Work/EEC181/ibex_zedboard/examples/fpga/zedboard/ip/pixel_buffer/pixel_buffer.xci"
+puts "xciDone"
+
+# C:/Users/pkhar/Documents/2022-23_School_Work/EEC181/ibex_zedboard/examples/fpga/zedboard/
+# ${workroot}/../src/lowrisc_ibex_top_zedboard_0.1/other/
+# C:\Users\pkhar\Documents\2022-23_School_Work\EEC181\ibex_zedboard\build\lowrisc_ibex_top_zedboard_0.1\synth-vivado\lowrisc_ibex_top_zedboard_0.1.srcs\sources_1\imports\other
+# C:\Users\pkhar\Documents\2022-23_School_Work\EEC181\ibex_zedboard\build\lowrisc_ibex_top_zedboard_0.1\src\lowrisc_ibex_top_zedboard_0.1\other
