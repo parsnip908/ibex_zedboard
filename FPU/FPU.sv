@@ -61,6 +61,7 @@ int_to_fp cvt_S_W(
 fp_to_int cvt_W_S(
 	.fp_i(operand_a),
 	.int_o(cvt_int_o),
+	.mode_i(mode_i[0]),
 	.Classif_op_a(Classif_a),
 	.flag()
 );
