@@ -74,20 +74,20 @@ CMP_32 CMP(
 
 SGNJ_32 SGNJ (
 	.rs1(operand_a_i),
-	.rs2(operand_b[15]),
+	.rs2(operand_b[31]),
 	.mode(mode_i),
 	.rd(sgnj_o)
 );
 
 always_comb begin
 	case (operator_i)
-		FP_ALU_ADD:		result_o = {add_sub_o, 16'd0};
-		FP_ALU_SUB:		result_o = {add_sub_o, 16'd0};
-		FP_ALU_MUL:		result_o = {mult_o,    16'd0};
-		FP_ALU_MINMAX:	result_o = {minmax_o,  16'd0};
-		FP_ALU_SGNJ:	result_o = {sgnj_o,    16'd0};
+		FP_ALU_ADD:		result_o = add_sub_o;
+		FP_ALU_SUB:		result_o = add_sub_o;
+		FP_ALU_MUL:		result_o = mult_o;
+		FP_ALU_MINMAX:	result_o = minmax_o;
+		FP_ALU_SGNJ:	result_o = sgnj_o;
 		FP_ALU_CMP:		result_o = {31'd0, cmp_o};
-		FP_ALU_CVT:		result_o = (mode_i[1])? {cvt_fp_o, 16'd0} : cvt_int_o;
+		FP_ALU_CVT:		result_o = (mode_i[1])? cvt_fp_o : cvt_int_o;
 		FP_ALU_CLASS:	result_o = {29'd0, Classif_a};
 		default:		result_o = 32'd0;
 	endcase
