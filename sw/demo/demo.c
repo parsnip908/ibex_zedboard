@@ -139,19 +139,19 @@ int main(int argc, char *argv[])
     while(1)
     {
         flushOutput();
-        usleep(1000 * 1000); // 1000 ms
+        usleep(1000 * 2000); // 1000 ms
         sprintf(output+00, " MNIST acc:");
         sprintf(output+16, " %d/%d!!", acc, (unsigned int) test_set.size);
         sprintf(output+32, " -------------- ");
         sprintf(output+48, " We did it boyz ");
         flushOutput();
-        usleep(1000 * 1000); // 1000 ms
+        usleep(1000 * 2000); // 1000 ms
         sprintf(output+00, " Let's do math: ");
         sprintf(output+16, " 127.5 * 0.125  ");
         sprintf(output+32, " =  15.9375     ");
         sprintf(output+48, " We did it boyz ");
         flushOutput();
-        usleep(1000 * 1000); // 1000 ms
+        usleep(1000 * 2000); // 1000 ms
         sprintf(output+00, " Let's do math: ");
         sprintf(output+16, " 3.14 + 0.09345");
         sprintf(output+32, " =  3.234375");
